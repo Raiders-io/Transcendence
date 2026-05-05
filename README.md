@@ -4,6 +4,13 @@ The project is subdivised in many repositories, and this one's the principal. It
 
 ## How to install
 
+### Requirements
+
+You will need at least :
+
+- `docker` (with docker compose)
+- `admin permissions` if you want to modify the `/etc/hosts` file (and use the URL, `https://raiders.io/`, instead of `https://127.0.0.1/`)
+
 ### Install the project
 
 To install this project you can use the following commands :
