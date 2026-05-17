@@ -1,4 +1,4 @@
-# Transcendance
+# Transcendence
 
 The project is subdivised in many repositories, and this one's the principal. It regroups all the services for the project.
 
