@@ -22,8 +22,8 @@ QUESTION_RESPONSE=$(curl -s -X POST "$BASE_URL/authoring/exams/$EXAM_ID/question
   -H "Content-Type: application/json" \
   -d '{
     "title": "What is the first letter of the latin alphabet?",
-    "question_type": 1
-	"good_answers": "a", "A"
+    "question_type": 2,
+	"good_answers": ["a", "A"]
   }')
 
 echo "Question response:"
