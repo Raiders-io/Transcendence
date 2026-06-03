@@ -1,3 +1,9 @@
 [submodule "deployment"]
 	path = deployment
 	url = git@github.com:Raiders-io/deployment
+[submodule "Backend-Lesson"]
+	path = Backend-Lesson
+	url = git@github.com:Raiders-io/Backend-Lesson
+[submodule "ObjectStorage"]
+	path = ObjectStorage
+	url = git@github.com:Raiders-io/ObjectStorage
