@@ -1,0 +1,35 @@
+FROM node:lts-bookworm-slim AS base
+
+# ----------------------------
+# Stage 1: Install all dependencies
+# ----------------------------
+FROM base AS deps
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+
+# ----------------------------
+# Stage 2: Build the application
+# ----------------------------
+FROM deps AS build
+WORKDIR /app
+COPY . .
+COPY './setup.sh' ./
+RUN chmod +x setup.sh
+EXPOSE 3333
+RUN apt-get update && apt-get install -y postgresql-client
+# RUN node ace build
+ENTRYPOINT ["sh" , "/app/setup.sh"]
+
+# # ----------------------------
+# # Stage 3: Production runtime
+# # ----------------------------
+# FROM base AS production
+# WORKDIR /app
+# ENV NODE_ENV=production
+
+# COPY --from=build /app/build ./
+# RUN npm ci --omit=dev
+
+# EXPOSE 3333
+# CMD ["node", "bin/server.js"]

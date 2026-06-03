@@ -1,0 +1,93 @@
+services:
+# Object Storage
+  api-object-storage:
+    container_name: api-object-storage
+    build:
+      context: ./API-ObjectStorage
+      dockerfile: Dockerfile_prod #DISABLE for dev
+    image: object-api-storage
+    environment:
+      - API_PORT=3333
+      - HOST=${HOST:?}
+      - LOG_LEVEL=${LOG_LEVEL:?}
+      - APP_KEY=${APP_KEY:?}
+      - APP_URL=${APP_URL:?}
+      - SESSION_DRIVER=${SESSION_DRIVER:?}
+      - DRIVE_DISK=${DRIVE_DISK:?}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:?}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:?}
+      - AWS_REGION=${AWS_REGION:?}
+      - S3_BUCKET=${S3_BUCKET:?}
+      - S3_ENDPOINT=${S3_ENDPOINT:?}
+      - POSTGRES_SERVICE_NAME=${POSTGRES_SERVICE_NAME:?}
+      - POSTGRES_PORT=${POSTGRES_PORT:?}
+      - POSTGRES_USER=${POSTGRES_USER:?}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?}
+      - POSTGRES_DB=${POSTGRES_DB:?}
+    depends_on:
+      postgresql:
+       condition: service_healthy
+      garage:
+       condition: service_healthy
+    networks:
+      - basic-network
+      - public-network
+    volumes:
+      - ./API-ObjectStorage/tmp:/tmp # WIP DB is stored in tmp now
+      - ./API-ObjectStorage/storage:/app/storage # WIP DB is stored in tmp now
+    ports:
+      - "3334:3333" #default port is 3333
+    restart: always
+
+  garage:
+    container_name: object-storage
+    image: dxflrs/garage:v2.0.0
+    command: /garage server
+    environment:
+      - GARAGE_DEFAULT_ACCESS_KEY=${GARAGE_DEFAULT_ACCESS_KEY:?}
+      - GARAGE_DEFAULT_SECRET_KEY=${GARAGE_DEFAULT_SECRET_KEY:?}
+      - GARAGE_DEFAULT_BUCKET=${GARAGE_DEFAULT_BUCKET:?}
+      - GARAGE_RUST_LOG=${GARAGE_RUST_LOG:?}
+    # ports: # Expose ports only in dev mode, not in production
+      # - "3900:3900"   # S3 API
+      # - "3903:3903"   # Admin API
+    volumes:
+      - ./garage-data:/var/lib/garage/data #TODO : Should be placed elsewhere in production, and should be a named volume
+      - ./ObjectStorage/Garage/garage.toml:/etc/garage.toml #Needs to be generated with generate_garage_toml.sh
+    networks:
+      - basic-network
+    healthcheck:
+      test: ["CMD", "/garage", "status"]
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  postgresql:
+    container_name: object-postgresql
+    image: postgres:18.4-alpine3.23
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:?}
+      - POSTGRES_USER=${POSTGRES_USER:?}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?}
+    volumes:
+      - ./postgresql-data:/var/lib/postgresql/18/docker #TODO : Should be placed elsewhere in production, and should be a named volume
+    ports:
+      - "5432:5432" #TODO : Expose port only in dev mode, not in production
+    networks:
+      - basic-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "${POSTGRES_DB}"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+networks:
+  basic-network:
+    driver: bridge
+    internal: true
+  public-network:
+    external: true
