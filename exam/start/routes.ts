@@ -10,8 +10,7 @@
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 import { controllers } from '#generated/controllers'
-import '../features/exam_authoring.ts'
-
+// import '../features/exam_authoring.ts'
 
 router
   .group(() => {
@@ -33,3 +32,6 @@ router
       .use(middleware.auth())
   })
   .prefix('/api/v1')
+
+router.resource('questions', controllers.Questions).apiOnly()
+router.resource('exam-authorings', controllers.ExamAuthorings).apiOnly()

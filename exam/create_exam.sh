@@ -3,9 +3,9 @@ BASE_URL="http://localhost:3333"
 
 echo "Creating exam..."
 
-EXAM_RESPONSE=$(curl -s -X POST "$BASE_URL/authoring/exams" \
+EXAM_RESPONSE=$(curl -s -X POST "$BASE_URL/exam-authorings" \
   -H "Content-Type: application/json" \
-  -d '{"title":"Alphabet"}')
+  -d '{"title":"Alphabet", "user_id":"5"}')
 
 echo "Exam response:"
 echo "$EXAM_RESPONSE"
@@ -18,7 +18,7 @@ echo "Extracted exam id: $EXAM_ID"
 echo ""
 echo "Creating question..."
 
-QUESTION_RESPONSE=$(curl -s -X POST "$BASE_URL/authoring/exams/$EXAM_ID/questions" \
+QUESTION_RESPONSE=$(curl -s -X POST "$BASE_URL/exam-authorings/$EXAM_ID/questions" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "What is the first letter of the latin alphabet?",

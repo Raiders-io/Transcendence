@@ -1,25 +1,24 @@
+import { QuestionSchema } from '#database/schema'
+import type { ManyToMany } from '@adonisjs/lucid/types/relations'
+import Exam from './exam.ts'
+import { manyToMany } from '@adonisjs/lucid/orm'
+
 export enum QuestionType
 {
-    DEFAULT,
-    MCQ,
-    TEXT,
-    TRUE_FALSE,
+    DEFAULT = 'DEFAULT',
+    MCQ = 'MCQ',
+    TEXT = 'TEXT',
+    TRUE_FALSE = 'TRUE_FALSE',
 }
 
-export default class Question
+export default class Question extends QuestionSchema
 {
-    id: number;
-    title: string;
-    question_type: QuestionType;
-    good_answers: string[];
-    bad_answers: string[]
-
-    constructor()
-    {
-        this.id = -1;
-        this.title = "(null)";
-        this.question_type = QuestionType.DEFAULT;
-        this.good_answers = [];
-        this.bad_answers = []
-    }
+    @manyToMany(() => Exam, {
+        pivotTable: 'exams_questions',
+        localKey: 'id',
+        relatedKey: 'id',
+        pivotForeignKey: 'question_id',
+        pivotRelatedForeignKey: 'exam_id',
+    })
+  declare Exam: ManyToMany<typeof Exam>
 }

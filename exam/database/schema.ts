@@ -32,6 +32,61 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class ExamSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'lessonRelatedId', 'title', 'updatedAt', 'userId'] as const
+  $columns = ExamSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare lessonRelatedId: string | null
+  @column()
+  declare title: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number | null
+}
+
+export class ExamsQuestionSchema extends BaseModel {
+  static $columns = ['createdAt', 'examId', 'id', 'points', 'position', 'questionId', 'updatedAt'] as const
+  $columns = ExamsQuestionSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare examId: number | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare points: number | null
+  @column()
+  declare position: number | null
+  @column()
+  declare questionId: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class QuestionSchema extends BaseModel {
+  static $columns = ['badAnswers', 'createdAt', 'goodAnswers', 'id', 'questionType', 'title', 'updatedAt'] as const
+  $columns = QuestionSchema.$columns
+  @column()
+  declare badAnswers: any | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare goodAnswers: any | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare questionType: string | null
+  @column()
+  declare title: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class UserSchema extends BaseModel {
   static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
   $columns = UserSchema.$columns
