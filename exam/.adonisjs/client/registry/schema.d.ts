@@ -175,4 +175,16 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/exam_authorings_controller').default['destroy']>>>
     }
   }
+  'exam_authorings.show_question': {
+    methods: ["GET","HEAD"]
+    pattern: '/exam-authorings/questions/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/exam_authorings_controller').default['showQuestion']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/exam_authorings_controller').default['showQuestion']>>>
+    }
+  }
 }

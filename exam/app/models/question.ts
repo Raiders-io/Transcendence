@@ -20,5 +20,15 @@ export default class Question extends QuestionSchema
         pivotForeignKey: 'question_id',
         pivotRelatedForeignKey: 'exam_id',
     })
-  declare Exam: ManyToMany<typeof Exam>
+
+    declare Exam: ManyToMany<typeof Exam>
+
+    static randomQuestionType(): string {
+    const types = Object.values(QuestionType)
+    return types[Math.floor(Math.random() * types.length)]
+    }
+
+    
 }
+
+

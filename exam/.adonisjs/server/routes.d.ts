@@ -18,6 +18,7 @@ export type ScannedRoutes = {
     'exam_authorings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'exam_authorings.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'exam_authorings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'exam_authorings.show_question': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   POST: {
     'auth.new_account.store': { paramsTuple?: []; params?: {} }
@@ -32,6 +33,7 @@ export type ScannedRoutes = {
     'questions.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'exam_authorings.index': { paramsTuple?: []; params?: {} }
     'exam_authorings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'exam_authorings.show_question': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   HEAD: {
     'profile.profile.show': { paramsTuple?: []; params?: {} }
@@ -39,6 +41,7 @@ export type ScannedRoutes = {
     'questions.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'exam_authorings.index': { paramsTuple?: []; params?: {} }
     'exam_authorings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'exam_authorings.show_question': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {
     'questions.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

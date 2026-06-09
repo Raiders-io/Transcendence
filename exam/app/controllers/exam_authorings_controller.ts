@@ -1,4 +1,5 @@
 import Exam from '#models/exam'
+import Question from '#models/question'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class ExamAuthoringsController {
@@ -22,6 +23,7 @@ export default class ExamAuthoringsController {
       title: body.title ?? '(null)',
       lessonRelatedId: body.lesson_related_id ?? null,
       userId: body.user_id ?? null,
+      questions: body.questions ?? null
     }
 
     const exam = await Exam.create(data)
@@ -36,6 +38,13 @@ export default class ExamAuthoringsController {
     if (!exam)
       return { error: "Exam not found" }
     return (exam)  }
+
+  async showQuestion({ params }: HttpContext) {
+    const question = await Question.find(params.id)
+    if (!question)
+      return { error: "Question not found" }
+    return question
+  }
 
   /**
    * Handle form submission for the edit action

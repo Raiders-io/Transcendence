@@ -90,6 +90,12 @@ const routes = {
     tokens: [{"old":"/exam-authorings/:id","type":0,"val":"exam-authorings","end":""},{"old":"/exam-authorings/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['exam_authorings.destroy']['types'],
   },
+  'exam_authorings.show_question': {
+    methods: ["GET","HEAD"],
+    pattern: '/exam-authorings/questions/:id',
+    tokens: [{"old":"/exam-authorings/questions/:id","type":0,"val":"exam-authorings","end":""},{"old":"/exam-authorings/questions/:id","type":0,"val":"questions","end":""},{"old":"/exam-authorings/questions/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['exam_authorings.show_question']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

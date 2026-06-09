@@ -11,6 +11,7 @@ export default class extends BaseSchema {
       table.integer('user_id').unsigned()
       table.timestamp('created_at')
       table.timestamp('updated_at')
+      table.json('questions').nullable()
 
       // Foreign key constraint
       // table.foreign('user_id').references('id').inTable('users').onDelete('CASCADE')
