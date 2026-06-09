@@ -45,5 +45,12 @@ export default class ExamAuthoringsController {
   /**
    * Delete record
    */
-  async destroy({ params }: HttpContext) {}
+  async destroy({ params }: HttpContext)
+  {
+    const exam = await Exam.find(params.id)
+    if (!exam)
+      return { error: "Exam not found" }
+    await exam.delete()
+    return { message: "Exam " + exam.id + " deleted successfully" }
+  }
 }
