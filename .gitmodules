@@ -10,3 +10,9 @@
 [submodule "Frontend"]
 	path = Frontend
 	url = git@github.com:Raiders-io/Frontend.git
+[submodule "Backend-Messaging-Service"]
+	path = Backend-Messaging-Service
+	url = git@github.com:Raiders-io/Backend-Messaging-Service.git
+[submodule "Backend_Auth-Service"]
+	path = Backend_Auth-Service
+	url = git@github.com:Raiders-io/Backend_Auth-Service.git
