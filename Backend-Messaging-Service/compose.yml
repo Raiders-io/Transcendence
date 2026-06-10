@@ -1,0 +1,56 @@
+serivces:
+  messaging-service:
+    build: ./messaging-service
+    container_name: messaging-service
+    env_file:
+      - ./messaging-service/.env
+    ports:
+      - "3334:3334"
+    volumes:
+      - ./messaging-service:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend-messaging
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_DATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - backend-messaging
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - backend-messaging
+
+networks:
+  backend-messaging:
+    driver: bridge
+
+volumes:
+  postgres_data:

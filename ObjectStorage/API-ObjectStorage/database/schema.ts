@@ -8,7 +8,18 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class AuthAccessTokenSchema extends BaseModel {
-  static $columns = ['abilities', 'createdAt', 'expiresAt', 'hash', 'id', 'lastUsedAt', 'name', 'tokenableId', 'type', 'updatedAt'] as const
+  static $columns = [
+    'abilities',
+    'createdAt',
+    'expiresAt',
+    'hash',
+    'id',
+    'lastUsedAt',
+    'name',
+    'tokenableId',
+    'type',
+    'updatedAt',
+  ] as const
   $columns = AuthAccessTokenSchema.$columns
   @column()
   declare abilities: string
@@ -30,6 +41,96 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare type: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+}
+
+export class StorageObjectSchema extends BaseModel {
+  static $columns = [
+    'bucket',
+    'createdAt',
+    'id',
+    'isVerified',
+    'key',
+    'mimeType',
+    'name',
+    'ownerId',
+    'sizeBytes',
+    'status',
+    'updatedAt',
+    'visibility',
+  ] as const
+  $columns = StorageObjectSchema.$columns
+  @column()
+  declare bucket: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isVerified: boolean | null
+  @column()
+  declare key: string
+  @column()
+  declare mimeType: string | null
+  @column()
+  declare name: string
+  @column()
+  declare ownerId: number
+  @column()
+  declare sizeBytes: bigint | number | null
+  @column()
+  declare status: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare visibility: string
+}
+
+export class UserQuotaSchema extends BaseModel {
+  static $columns = [
+    'createdAt',
+    'downloadCount',
+    'downloadCountLimit',
+    'downloadCountResetAt',
+    'id',
+    'objectCount',
+    'objectCountLimit',
+    'storageBytes',
+    'storageBytesLimit',
+    'updatedAt',
+    'uploadCount',
+    'uploadCountLimit',
+    'uploadCountResetAt',
+    'userId',
+  ] as const
+  $columns = UserQuotaSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare downloadCount: bigint | number
+  @column()
+  declare downloadCountLimit: bigint | number
+  @column.dateTime()
+  declare downloadCountResetAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare objectCount: bigint | number
+  @column()
+  declare objectCountLimit: bigint | number
+  @column()
+  declare storageBytes: bigint | number
+  @column()
+  declare storageBytesLimit: bigint | number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare uploadCount: bigint | number
+  @column()
+  declare uploadCountLimit: bigint | number
+  @column.dateTime()
+  declare uploadCountResetAt: DateTime | null
+  @column()
+  declare userId: number
 }
 
 export class UserSchema extends BaseModel {

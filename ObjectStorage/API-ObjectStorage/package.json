@@ -10,6 +10,9 @@
   },
   "scripts": {
     "start": "node bin/server.js",
+    "prod": "node bin/server.js",
+    "migration": "node ace migration:run",
+    "migration-force": "node ace migration:run --force",
     "build": "node ace build",
     "dev": "node ace serve --hmr",
     "test": "node ace test",
@@ -32,6 +35,7 @@
     "#providers/*": "./providers/*.js",
     "#policies/*": "./app/policies/*.js",
     "#abilities/*": "./app/abilities/*.js",
+    "#enums/*": "./app/enums/*.js",
     "#database/*": "./database/*.js",
     "#tests/*": "./tests/*.js",
     "#start/*": "./start/*.js",
