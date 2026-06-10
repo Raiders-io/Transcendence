@@ -7,3 +7,6 @@
 [submodule "ObjectStorage"]
 	path = ObjectStorage
 	url = git@github.com:Raiders-io/ObjectStorage
+[submodule "Frontend"]
+	path = Frontend
+	url = git@github.com:Raiders-io/Frontend.git
