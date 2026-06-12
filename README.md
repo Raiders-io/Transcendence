@@ -41,40 +41,4 @@ Optional : `name`, update only the given remote.
 
 ## Architecture
 
-DB par service
-
-```mermaid
-mindmap
-  root((API Gateway))
-    (Nginx)
-        (Frontend)
-    (DB Users)
-    (Gestionnaire de fichiers)
-        (DB Liens entre objets)
-        (DB Objets)
-    (Messagerie)
-        (DB Messages)
-    (Exercices)
-    (Intelligence Artificielle)
-        (DB Indexation)
-    (Grafana)
-       (Prometheus)
-```
-
-DB rassemblées ?
-
-```mermaid
-mindmap
-  root((API Gateway))
-    (Nginx)
-        (Frontend)
-    (DB Users-Messages-Liens)
-    (Gestionnaire de fichiers)
-        (DB Objets)
-    (Messagerie)
-    (Exercices)
-    (Intelligence Artificielle)
-        (DB Indexation)
-    (Grafana)
-       (Prometheus)
-```
+See the [ARCH.md in docs/](docs/ARCH.md).
