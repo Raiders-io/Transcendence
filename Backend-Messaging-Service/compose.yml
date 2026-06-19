@@ -1,14 +1,13 @@
-serivces:
+services:
   messaging-service:
-    build: ./messaging-service
     container_name: messaging-service
     env_file:
-      - ./messaging-service/.env
+      - ./.env
+    build:
+      context: ./.
+      target: dev # production or dev
     ports:
-      - "3334:3334"
-    volumes:
-      - ./messaging-service:/app
-      - /app/node_modules
+      - "3335:3334"
     depends_on:
       postgres:
         condition: service_healthy

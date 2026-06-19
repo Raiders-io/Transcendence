@@ -1,15 +1,47 @@
-FROM node:24-slim
+FROM node:24.16.0-bookworm-slim AS base
 
 WORKDIR /app
 
+# ----------------------------
+# Stage : Install all dependencies
+# ----------------------------
+FROM base AS deps
 COPY package*.json ./
+RUN npm ci
 
-RUN npm install
+# ----------------------------
+# Stage : Development runtime
+# ----------------------------
+FROM deps AS dev
+ENV NODE_ENV=development
+
+COPY ./entrypoint.sh /
+RUN chmod +x /entrypoint.sh
 
 COPY . .
 
-EXPOSE 3334
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["npm", "run", "dev"]
 
-COPY entrypoint.sh .
-RUN chmod +x entrypoint.sh
-CMD ["sh", "./entrypoint.sh"]
+# ----------------------------
+# Stage : Build the application
+# ----------------------------
+FROM deps AS build
+COPY . .
+RUN node ace build
+
+# ----------------------------
+# Stage : Production runtime
+# ----------------------------
+FROM base AS production
+ENV NODE_ENV=production
+
+COPY ./entrypoint.sh /
+RUN chmod +x /entrypoint.sh
+
+COPY --from=build /app/build ./
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["npm", "run", "prod"]
