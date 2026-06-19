@@ -14,63 +14,45 @@
 <h3>POST Signup</h3>
 	<!-- Formulaire de login -->
 	<form id="signupForm">
-	<div class="container">
 		<label for="fullName"><b>First Name</b></label>
-		<input type="text" placeholder="Enter First Name" name="fullName" required><br>
+		<input type="text" placeholder="Enter First Name" name="fullName" id="fullName" required><br>
 
 		<label for="email"><b>Email</b></label>
-		<input type="text" placeholder="Enter Email" name="email" required><br>
+		<input type="text" placeholder="Enter Email" name="email" id="email" autocomplete="email" required><br>
 		
 		<label for="password"><b>Password</b></label>
-		<input type="password" placeholder="Enter Password" name="password" required><br>
+		<input type="password" placeholder="Enter Password" name="password" id="password" required><br>
 		
 		<label for="passwordConfirmation"><b>Confirm Password</b></label>
-		<input type="password" placeholder="Confirm Password" name="passwordConfirmation" required><br>
+		<input type="password" placeholder="Confirm Password" name="passwordConfirmation" id="passwordConfirmation" required><br>
 		
 		<label>
 			<input type="checkbox" checked="checked" name="remember"> Remember me
 		</label><br>
 		
 		<button type="submit">Signup</button>
-	</div>
   </form>
 
 <h3>POST Login</h3>
 	<!-- Formulaire de login -->
 	<form id="loginForm">
-	<div class="container">
 		<label for="email"><b>Email</b></label>
-		<input type="text" placeholder="Enter Email" name="email" required><br>
+		<input type="text" placeholder="Enter Email" name="email" id="email" autocomplete="email" required><br>
 		
 		<label for="password"><b>Password</b></label>
-		<input type="password" placeholder="Enter Password" name="password" required><br>
+		<input type="password" placeholder="Enter Password" name="password" id="password" required><br>
 		
 		<label>
 			<input type="checkbox" checked="checked" name="remember"> Remember me
 		</label><br>
 		
 		<button type="submit">Login</button>
-	</div>
   </form>
 
 <h3>GET Profile</h3>
 	<!-- Formulaire de Profile -->
 	<form id="profileForm">
-	<div class="container">
 		<button type="submit">Get Profile</button>
-	</div>
-  </form>
-
-<h3>Upload Avatar</h3>
-	<!-- Formulaire d'upload d'avatar -->
-	<form id="avatarForm" enctype="multipart/form-data">
-		<div>
-		<label for="file">Choose file to upload</label><br>
-		<input type="file" id="avatar" name="avatar" multiple />
-		</div><br>
-		<div>
-		<button type="submit">Submit</button>
-		</div>
 	</form>
 
 <h3>Upload Files</h3>
@@ -89,8 +71,6 @@
 	<!-- Formulaire de mise à jour de fichier -->
 	<form id="updateFileForm" enctype="multipart/form-data">
 		<div>
-		<label for="updateFileName">File name to update</label><br>
-		<input type="text" placeholder="Enter File Name" name="updateFileName" required><br>
 		<label for="updateFile">Choose new file</label><br>
 		<input type="file" id="updateFile" name="updateFile" required />
 		</div><br>
@@ -104,7 +84,7 @@
 	<form id="deleteFileForm" enctype="multipart/form-data">
 		<div>
 		<label for="deleteFileName">File name to delete</label><br>
-		<input type="text" placeholder="Enter File Name" name="deleteFileName" required><br>
+		<input type="text" placeholder="Enter File Name" name="deleteFileName" id="deleteFileName" required><br>
 		</div><br>
 		<div>
 		<button type="submit">Submit</button>
@@ -142,6 +122,11 @@
 		<button type="submit">Submit</button>
 		</div>
 	</form>
+<div id="fileExplorer">
+	<div id="fileList">
+	    <!-- Les fichiers seront générés ici -->
+  	</div>
+</div>
 
 <h3>Show Specific File</h3>
 	<!-- Formulaire d'upload de fichiers -->
@@ -155,28 +140,26 @@
 		</div>
 	</form>
 
-<h2>Lesson API</h2>
-<h3>Create Lesson</h3>
-	<!-- Formulaire d'upload d'avatar -->
-	<form id="createLessonForm" enctype="multipart/form-data">
-		<div>
-		<input type="text" placeholder="Enter Name" name="title" required><br>
-		<fieldset name="pets" id="tags" multiple>
-			<legend>Choose your tags:</legend>
-			<input type="checkbox" value="Maths">Maths</input>
-			<input type="checkbox" value="Bio">Bio</input>
-			<input type="checkbox" value="Dessin">Dessin</input>
-			<input type="checkbox" value="Physique">Physique</input>
-			<input type="checkbox" value="Chimie">Chimie</input>
-		</select>
-		</div><br>
-		<div>
-		<button type="submit">Submit</button>
-		</div>
-	</form>
-
 <script>
-	let authToken = null;
+	// Fonctions utilitaires pour les cookies
+	function setCookie(name, value, days = 7) {
+		const expires = new Date(Date.now() + days * 864e5).toUTCString();
+		document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Strict`;
+	}
+
+	function getCookie(name) {
+		return document.cookie.split('; ').reduce((r, v) => {
+			const parts = v.split('=');
+			return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+		}, '');
+	}
+
+	function deleteCookie(name) {
+		document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+	}
+
+	// Récupération du token au chargement de la page
+	let authToken = getCookie('authToken') || null;
 
 // Object Storage API - Signup
 document.getElementById('signupForm').addEventListener('submit', async (e) => {
@@ -201,6 +184,7 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
 		return;
 	}
 	authToken = json.data.token;
+	setCookie('authToken', authToken);
 	console.log('Token récupéré :', authToken);
 	alert('Connected! You can now upload your avatar.');
 });
@@ -226,6 +210,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 		return;
 	}
 	authToken = json.data.token;
+	setCookie('authToken', authToken);
 	console.log('Token récupéré :', authToken);
 	alert('Connected! You can now upload your avatar.');
 });
@@ -250,43 +235,105 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
 	console.log('Response profile :', json);
 });
 
-// Upload avatar
-document.getElementById('avatarForm').addEventListener('submit', async (e) => {
-	e.preventDefault();
-
-	if (!authToken) {
-		alert('Please login first !');
-		return;
-	}
-
-	const formData = new FormData();
-	const fileInput = document.getElementById('avatar');
-	for (const file of fileInput.files) {
-		formData.append('avatars[]', file); // avatars[] est le nom du type pour le validator
-	}
-
-	const res = await fetch('http://127.0.0.1:3334/profile/avatar', {
-		method: 'POST',
-		headers: { 'Authorization': `Bearer ${authToken}` },
-		body: formData,
-	});
-
-	const json = await res.text();
-	console.log('Response upload :', json);
-});
-
-
 // Upload files
 document.getElementById('filesForm').addEventListener('submit', async (e) => {
 	e.preventDefault();
 
+	const formData = new FormData();
+	await uploadMultipleFiles(document.getElementById('file'));
+});
+
+// Update single file by name
+document.getElementById('updateFileForm').addEventListener('submit', async (e) => {
+	e.preventDefault();
+
+	await updateFile(document.getElementById('updateFile'));
+});
+
+// Update multiple files by their names
+document.getElementById('updateMultipleFilesForm').addEventListener('submit', async (e) => {
+	e.preventDefault();
+
+	await updateMultipleFile(document.getElementById('updateMultipleFiles'));
+});
+
+// Delete single file by name
+document.getElementById('deleteFileForm').addEventListener('submit', async (e) => {
+	e.preventDefault();
+
+	const form = e.target;
+	await deleteFile(form.fileName.value);
+});
+
+// Delete multiple files by names
+document.getElementById('deleteMultipleFilesForm').addEventListener('submit', async (e) => {
+	e.preventDefault();
+
+	const form = e.target;
+	const fileNames = form.deleteFileNames.value
+		.split('\n')
+		.map(name => name.trim())
+		.filter(name => name.length > 0);
+
+	if (fileNames.length === 0) {
+		alert('Please enter at least one file name');
+		return;
+	}
+	console.log('Deleting files:', fileNames);
+	await deleteMultipleFiles(fileNames);
+});
+
+// Index of files
+document.getElementById('indexFilesForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (!authToken) {
+        alert('Please login first !');
+        return;
+    }
+
+    try {
+        const res = await fetch('http://127.0.0.1:3334/storage/objects', {
+            method: 'GET',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`,
+            },
+        });
+        
+        const json = await res.json(); // Utilisez .json() au lieu de .text()
+        console.log('Response :', json);
+        
+        // Afficher les fichiers
+        displayFiles(json.objects);
+        
+    } catch (error) {
+        console.error('Erreur :', error);
+        document.getElementById('fileList').innerHTML = 
+            '<p style="color: red;">❌ Erreur lors du chargement des fichiers</p>';
+    }
+});
+
+// Show Specific File
+document.getElementById('showFileForm').addEventListener('submit', async (e) => {
+	e.preventDefault();
+	const form = e.target;
+
+	await downloadFile(form.fileName.value);
+});
+
+// Waits a fileInput from a document.getElementById()
+async function uploadMultipleFiles(fileInput) {
+	if (!fileInput) {
+		alert('Please add at least one file');
+		return;
+	}
 	if (!authToken) {
 		alert('Please login first !');
 		return;
 	}
 
 	const formData = new FormData();
-	const fileInput = document.getElementById('file');
 	for (const file of fileInput.files) {
 		formData.append('files[]', file); // files[] est le nom du type pour le validator
 	}
@@ -299,25 +346,27 @@ document.getElementById('filesForm').addEventListener('submit', async (e) => {
 
 	const json = await res.text();
 	console.log('Response upload :', json);
-});
+} 
 
-// Update single file by name
-document.getElementById('updateFileForm').addEventListener('submit', async (e) => {
-	e.preventDefault();
-
+// Waits a fileInput from a document.getElementById()
+async function updateFile(fileInput) {
+	if (!fileInput) {
+		alert('Please add at least one file');
+		return;
+	}
 	if (!authToken) {
 		alert('Please login first !');
 		return;
 	}
 
-	const form = e.target;
-	const formData = new FormData();
-	const fileInput = document.getElementById('updateFile');
-	for (const file of fileInput.files) {
-		formData.append('files[]', file);
+	if (fileInput.files.length !== 1) {
+		alert('Please select exactly one file to update.');
+		return;
 	}
+	const formData = new FormData();
+	formData.append('file', fileInput.files[0]);
 
-	const res = await fetch(`http://127.0.0.1:3334/storage/objects/${form.updateFileName.value}`, {
+	const res = await fetch(`http://127.0.0.1:3334/storage/objects/${fileInput.files[0].name}`, {
 		method: 'PUT',
 		headers: {
 			'Authorization': `Bearer ${authToken}`,
@@ -328,19 +377,20 @@ document.getElementById('updateFileForm').addEventListener('submit', async (e) =
 	const json = await res.text();
 	console.log('Response update :', json);
 	alert('File updated successfully');
-});
+} 
 
-// Update multiple files by their names
-document.getElementById('updateMultipleFilesForm').addEventListener('submit', async (e) => {
-	e.preventDefault();
-
+// Waits a fileInput from a document.getElementById()
+async function updateMultipleFile(fileInput) {
+	if (!fileInput) {
+		alert('Please add at least one file');
+		return;
+	}
 	if (!authToken) {
 		alert('Please login first !');
 		return;
 	}
 
 	const formData = new FormData();
-	const fileInput = document.getElementById('updateMultipleFiles');
 	for (const file of fileInput.files) {
 		formData.append('files[]', file);
 	}
@@ -356,97 +406,223 @@ document.getElementById('updateMultipleFilesForm').addEventListener('submit', as
 	const json = await res.text();
 	console.log('Response update :', json);
 	alert('Files updated successfully');
-});
+} 
 
-// Delete single file by name
-document.getElementById('deleteFileForm').addEventListener('submit', async (e) => {
-	e.preventDefault();
+// Fonction pour créer dynamiquement la liste des fichiers
+function displayFiles(files) {
+    const fileList = document.getElementById('fileList');
+    
+    if (!files || files.length === 0) {
+        fileList.innerHTML = '<p>📂 Aucun fichier trouvé</p>';
+        return;
+    }
+	let html = `<h4>📁 Explorateur de fichiers</h4>`;
 
+	html += `
+		<form action="" method="get" class="ffile-actions">
+			<label for="selectAll">Select All</label>
+			<input type="checkbox" onclick="toggleSelectAll()"/>
+			<button type="button" onclick="downloadSelectedFiles()" class="btn-action">📥 Download Selected</button>	
+			<button type="button" onclick="deleteSelectedFiles()" class="btn-action btn-danger">🗑️ Delete Selected</button>	
+		`;
+    html += `
+        <table class="file-table">
+            <thead>
+                <tr>
+					<th>Select</th>
+					<th>Icon</th>
+                    <th>Nom</th>
+                    <th>Taille</th>
+                    <th>Type</th>
+                    <th>Visibilité</th>
+                    <th>Date de création</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+	total_size = Number(0);
+    files.forEach(file => {
+		total_size += Number(file.sizeBytes);
+        const size = formatFileSize(file.sizeBytes);
+        const date = formatDate(file.createdAt);
+
+		html += `
+            <tr id="table-file-${file.name}" >
+				<td class="file-selected">
+					<input type="checkbox" onclick="updateSelectedCount()"/>
+				</td>
+				<td class="file-icon">${getFileIcon(file.mimeType, file.name)}</td>
+                <td class="file-name">${file.name}</td>
+                <td class="file-size">${size}</td>
+                <td>${file.mimeType}</td>
+                <td>
+                    <span class="visibility-badge ${file.visibility}">
+                        ${file.visibility === 'private' ? '🔒' : '🌍'}
+                    </span>
+                </td>
+                <td>${date}</td>
+                <td>
+                    <button type="button" onclick="downloadFile('${file.name}')" class="btn-action">📥</button>
+                    <button type="button" onclick="deleteFile('${file.name}')" class="btn-action btn-danger">🗑️</button>
+                </td>
+            </tr>
+        `;
+    });
+	html += `
+		<tfoot>
+			<tr>
+				<td colspan="2">Selected : <span id="selectedCount">0</span></td>
+				<td colspan="3" id="totalFiles">Total : ${files.length} fichier(s)</td>
+				<td colspan="3" id="totalFileSize">Espace total utilisé : ${formatFileSize(total_size)}</td>
+			</tr>
+		</tfoot>`;
+
+    html += '</tbody></table></form>';
+
+    fileList.innerHTML = html;
+}
+
+function updateSelectedCount() {
+	const checkboxes = document.querySelectorAll('#fileList tbody input[type="checkbox"]');
+	const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+	document.getElementById('selectedCount').textContent = selectedCount;
+}
+
+function toggleSelectAll() {
+	const selectAllCheckbox = document.querySelector('#fileList input[type="checkbox"]');
+	const checkboxes = document.querySelectorAll('#fileList tbody input[type="checkbox"]');
+	checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+	updateSelectedCount();
+}
+
+// Utilitaires
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function getFileIcon(mimeType) {
+    // Icônes par type MIME
+    const icons = {
+        'text': '📝',
+        'text/plain': '📝',
+        'text/html': '🌐',
+        'text/css': '🎨',
+        'text/javascript': '⚡',
+        'text/markdown': '📄',
+        'image': '🖼️',
+        'image/jpeg': '🖼️',
+        'image/png': '🖼️',
+        'image/gif': '🎭',
+        'image/svg+xml': '🔷',
+        'image/webp': '🖼️',
+        'audio': '🎵',
+        'audio/mpeg': '🎵',
+        'audio/wav': '🎵',
+        'audio/ogg': '🎵',
+        'video': '🎬',
+        'video/mp4': '🎬',
+        'video/webm': '🎬',
+        'application/pdf': '📕',
+        'application/json': '📋',
+        'application/xml': '📋',
+        'application/zip': '📦',
+        'application/gzip': '📦',
+        'application/x-tar': '📦',
+        'application/x-rar-compressed': '📦',
+        'application/x-7z-compressed': '📦',
+        'application/msword': '📘',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '📘',
+        'application/vnd.ms-excel': '📊',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '📊',
+        'application/vnd.ms-powerpoint': '📽️',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation': '📽️',
+        'application/javascript': '⚡',
+        'application/typescript': '⚡',
+        'application/wasm': '🔧',
+        'application/octet-stream': '📎',
+        'directory': '📁',
+        'folder': '📁',
+    };
+
+    // Vérification exacte du type MIME
+    if (icons[mimeType]) {
+        return icons[mimeType];
+    }
+
+    // Vérification par catégorie (première partie du type MIME)
+    const category = mimeType.split('/')[0];
+    if (icons[category]) {
+        return icons[category];
+    }
+
+    // Extension du fichier (fallback)
+    const extensionIcons = {
+        'js': '⚡',
+        'ts': '⚡',
+        'jsx': '⚛️',
+        'tsx': '⚛️',
+        'py': '🐍',
+        'java': '☕',
+        'cpp': '🔧',
+        'c': '🔧',
+        'h': '🔧',
+        'rs': '🦀',
+        'sh': '💻',
+        'bash': '💻',
+        'bat': '💻',
+        'ps1': '💻',
+        'yaml': '📋',
+        'yml': '📋',
+        'toml': '📋',
+        'conf': '⚙️',
+        'env': '🔐',
+        'gitignore': '🙈',
+        'dockerfile': '🐳',
+        'makefile': '🔨',
+        'md': '📄',
+        'txt': '📝',
+        'svg': '🔷',
+        'ico': '🔶',
+    };
+
+    // Essayer de trouver par extension
+    if (fileName) {
+        const extension = fileName.split('.').pop()?.toLowerCase();
+        if (extension && extensionIcons[extension]) {
+            return extensionIcons[extension];
+        }
+    }
+
+    // Icône par défaut si rien n'est trouvé
+    return '📄';
+}
+
+async function downloadFile(fileName) {
+	if (!fileName) {
+		alert('Please enter a file name to download.');
+		return;
+	}
 	if (!authToken) {
 		alert('Please login first !');
 		return;
 	}
-
-	const form = e.target;
-
-	const res = await fetch(`http://127.0.0.1:3334/storage/objects/${form.deleteFileName.value}`, {
-		method: 'DELETE',
-		headers: {
-			'Authorization': `Bearer ${authToken}`,
-		},
-	});
-
-	const json = await res.text();
-	console.log('Response delete :', json);
-	alert('File deleted successfully');
-});
-
-// Delete multiple files by names
-document.getElementById('deleteMultipleFilesForm').addEventListener('submit', async (e) => {
-	e.preventDefault();
-
-	if (!authToken) {
-		alert('Please login first !');
-		return;
-	}
-
-	const form = e.target;
-	const fileNames = form.deleteFileNames.value
-		.split('\n')
-		.map(name => name.trim())
-		.filter(name => name.length > 0);
-
-	if (fileNames.length === 0) {
-		alert('Please enter at least one file name');
-		return;
-	}
-
-	const res = await fetch('http://127.0.0.1:3334/storage/objects/', {
-		method: 'DELETE',
-		headers: {
-			'Authorization': `Bearer ${authToken}`,
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ ids: fileNames }),
-	});
-
-	const json = await res.text();
-	console.log('Response delete :', json);
-	alert('Files deleted successfully');
-});
-
-
-// Index of files
-document.getElementById('indexFilesForm').addEventListener('submit', async (e) => {
-	e.preventDefault();
-	const form = e.target;
-
-	if (!authToken) {
-		alert('Please login first !');
-		return;
-	}
-
-	const res = await fetch('http://127.0.0.1:3334/storage/objects', {
-		method: 'GET',
-		headers: { 'Content-Type': 'application/json',
-					'Authorization': `Bearer ${authToken}`,
-		},
-	});
-	const json = await res.text();
-	console.log('Response upload :', json);
-});
-
-// Show Specific File
-document.getElementById('showFileForm').addEventListener('submit', async (e) => {
-	e.preventDefault();
-	const form = e.target;
-
-	if (!authToken) {
-		alert('Please login first !');
-		return;
-	}
-
-	const res = await fetch(`http://127.0.0.1:3334/storage/objects/${form.fileName.value}`, {
+	const res = await fetch(`http://127.0.0.1:3334/storage/objects/${fileName}`, {
 		method: 'GET',
 		headers: { 'Authorization': `Bearer ${authToken}` },
 	});
@@ -462,38 +638,141 @@ document.getElementById('showFileForm').addEventListener('submit', async (e) => 
 	const url = window.URL.createObjectURL(blob);
 	const a = document.createElement('a');
 	a.href = url;
-	a.download = `${form.fileName.value}`;
+	a.download = `${fileName}`;
 	a.click();
 	window.URL.revokeObjectURL(url);
-});
-;
+}
 
-// create lesson
-document.getElementById('createLessonForm').addEventListener('submit', async (e) => {
-	e.preventDefault();
-	const form = e.target;
-
+async function deleteFile(fileName) {
+	if (!fileName) {
+		alert('Please enter a file name to delete.');
+		return;
+	}
 	if (!authToken) {
 		alert('Please login first !');
 		return;
 	}
-
-	const tagsList = document.getElementById('tags');
-	const selectedTags = [];
-	for (const tag of tagsList.querySelectorAll('input[type="checkbox"]:checked')) {
-		selectedTags.push(tag.value);
-	}
-	const res = await fetch('http://127.0.0.1:3333/lessons/', {
-		method: 'GET',
-		headers: { 'Content-Type': 'application/json' },
-	// 	body: JSON.stringify({
-	// 		title: form.title.value,
-	// 		tags: selectedTags,
-	// }),
+	const res = await fetch(`http://127.0.0.1:3334/storage/objects/${fileName}`, {
+		method: 'DELETE',
+		headers: {
+			'Authorization': `Bearer ${authToken}`,
+		},
 	});
+
 	const json = await res.text();
-	console.log('Response upload :', json);
-});
+	console.log('Response delete :', json);
+	deleteTableRow(fileName);
+	// alert('File deleted successfully');
+}
+
+function deleteTableRow(fileName) {
+	if (!fileName) {
+		return;
+	}
+	const row = document.getElementById(`table-file-${fileName}`);
+	if (!row) {
+		return ;
+	}
+	row.remove();
+	updateSelectedCount();
+	updateTotalFilesCount();
+	updateTotalSize();
+}
+
+function deleteTableRows(fileNames) {
+	if (!fileNames || fileNames.length === 0) {
+		return;
+	}
+	for (const fileName of fileNames) {
+		const row = document.getElementById(`table-file-${fileName}`);
+		if (row) {
+			row.remove();
+		}
+	}
+	updateSelectedCount();
+	updateTotalFilesCount();
+	updateTotalSize();
+}
+
+// Waits a fileName Array
+async function deleteMultipleFiles(fileNames) {
+	if (!fileNames || fileNames.length === 0) {
+		alert('Please enter at least one file name');
+		return;
+	}
+	if (!authToken) {
+		alert('Please login first !');
+		return;
+	}
+	const res = await fetch('http://127.0.0.1:3334/storage/objects/', {
+		method: 'DELETE',
+		headers: {
+			'Authorization': `Bearer ${authToken}`,
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ ids: fileNames }),
+	});
+
+	const json = await res.text();
+	console.log('Response delete :', json);
+	deleteTableRows(fileNames);
+	// alert('Files deleted successfully');
+}
+
+function updateTotalFilesCount() {
+	const totalFiles = document.querySelectorAll('#fileList tbody tr');
+	if (!totalFiles)
+		return;
+	document.getElementById('totalFiles').textContent = `Total : ${totalFiles.length} fichier(s)`;
+}
+
+function updateTotalSize() {
+	const item = document.getElementById('totalFileSize');
+	if (!item)
+		return;
+	const rows = document.querySelectorAll('#fileList tbody tr');
+	if (!rows)
+		return;
+	let totalSize = 0;
+	rows.forEach(row => {
+		const sizeCell = row.getElementsByClassName('file-size');
+		if (sizeCell && sizeCell[0]) {
+			totalSize += parseInt(sizeCell[0].textContent);
+		}
+	});
+	item.textContent = `Espace total utilisé : ${formatFileSize(totalSize)}`;
+}
+
+async function downloadSelectedFiles() {
+	const checkboxes = document.querySelectorAll('#fileList tbody input[type="checkbox"]');
+	const selectedFiles = Array.from(checkboxes)
+		.filter(cb => cb.checked)
+		.map(cb => cb.closest('tr').querySelector('.file-name').textContent.trim());
+
+	if (selectedFiles.length === 0) {
+		alert('Please select at least one file to download.');
+		return;
+	}
+
+	for (const fileName of selectedFiles) {
+		await downloadFile(fileName);
+	}
+}
+
+async function deleteSelectedFiles() {
+	const checkboxes = document.querySelectorAll('#fileList tbody input[type="checkbox"]');
+	const selectedFiles = Array.from(checkboxes)
+		.filter(cb => cb.checked)
+		.map(cb => cb.closest('tr').querySelector('.file-name').textContent.trim());
+
+	if (selectedFiles.length === 0) {
+		alert('Please select at least one file to delete.');
+		return;
+	}
+
+	await deleteMultipleFiles(selectedFiles);
+}
+
 </script>
 </body>
 </html>
