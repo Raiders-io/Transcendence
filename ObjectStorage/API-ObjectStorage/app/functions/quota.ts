@@ -91,6 +91,7 @@ async function resetDailyCounts(userId: number): Promise<QuotaUsage> {
     upload_count: 0,
     download_count_reset_at: nextReset,
     upload_count_reset_at: nextReset,
+    updated_at: new Date(),
   })
   return createQuotaUsage(quotaRow, true)
 }
@@ -119,14 +120,18 @@ export async function QuotaTryToUpload(userId: number, newObjectSize: bigint) {
       storage_bytes: (BigInt(quotaUsage.storageBytes) + newObjectSize).toString(),
       object_count: (BigInt(quotaUsage.objectCount) + BigInt(1)).toString(),
       upload_count: (BigInt(quotaUsage.uploadCount) + BigInt(1)).toString(),
+      updated_at: new Date(),
     })
 }
 
-// TODO: File already arrived so it's not really a protection against quota overflow
 export async function QuotaTryToUpdate(userId: number, newObjectSize: bigint) {
   /**
    * When replacing, the new object will replace the old one, so but at a time,
-   * the two objects coexists. The total storage bytes shouldn't exceed the limit even during the upload process.
+   * the two objects coexists. The total storage bytes shouldn't exceed the limit
+   * even during the upload process. The temporary object is stored firstly in API,
+   * then moved to ObjectStorage. As we can't trust the incomming file size, 
+   * we need to check the quota after the file is uploaded. 
+   * If the quota is exceeded, we should delete the temporary file and return an error.
    *  */
   await QuotaTryToUpload(userId, newObjectSize)
 }
@@ -145,6 +150,7 @@ export async function QuotaTryToDownload(userId: number) {
     .where('user_id', userId)
     .update({
       download_count: (BigInt(quotaUsage.downloadCount) + BigInt(1)).toString(),
+      updated_at: new Date(),
     })
 }
 
@@ -167,5 +173,6 @@ export async function QuotaTryToDelete(userId: number, objectSize: bigint) {
     .update({
       storage_bytes: (BigInt(quotaUsage.storageBytes) - objectSize).toString(),
       object_count: (BigInt(quotaUsage.objectCount) - BigInt(1)).toString(),
+      updated_at: new Date(),
     })
 }
