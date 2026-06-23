@@ -4,6 +4,7 @@ import { createAdapter } from '@socket.io/redis-adapter'
 import app from '@adonisjs/core/services/app'
 import server from '@adonisjs/core/services/server'
 import ChatService from '#services/chat_service'
+import verifyToken from '#services/verify_token'
 
 declare module '@adonisjs/core/types' {
 	interface ContainerBindings {
@@ -26,19 +27,11 @@ export default class SocketProvider {
 
 			io.use(async (socket: Socket, next: (err?: Error) => void): Promise<void> => {
 				const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.replace("Bearer ", "");
-				try {
-					const response: Response = await fetch('http://auth-service:3333/auth/verify', {
-						headers: { Authorization: `Bearer ${token}` }
-					})
-					if (!response.ok)
-						throw new Error('Invalid token')
-					const body = await response.json() as { data: { userId: number } }
-					const userId: number = body.data.userId
-					socket.handshake.auth.userId = userId
-					next()
-				} catch {
-					next(new Error('Unauthorized'))
-				}
+				const userId = await verifyToken(token)
+				if (userId === null)
+					return next(new Error('Unauthorized'))
+				socket.handshake.auth.userId = userId
+				next()
 			})
 
 			const chatService: ChatService = new ChatService(io)

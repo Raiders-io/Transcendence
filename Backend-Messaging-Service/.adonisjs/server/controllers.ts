@@ -3,4 +3,6 @@
  * DO NOT EDIT manually
  */
 
-export const controllers = {}
+export const controllers = {
+  Conversations: () => import('#controllers/conversations_controller'),
+}
