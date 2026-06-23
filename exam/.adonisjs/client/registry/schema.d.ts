@@ -175,6 +175,66 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/exam_authorings_controller').default['destroy']>>>
     }
   }
+  'exam_papers.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/exam-papers'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/exam_papers_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/exam_papers_controller').default['index']>>>
+    }
+  }
+  'exam_papers.store': {
+    methods: ["POST"]
+    pattern: '/exam-papers'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/exam_papers_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/exam_papers_controller').default['store']>>>
+    }
+  }
+  'exam_papers.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/exam-papers/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/exam_papers_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/exam_papers_controller').default['show']>>>
+    }
+  }
+  'exam_papers.update': {
+    methods: ["PUT","PATCH"]
+    pattern: '/exam-papers/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/exam_papers_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/exam_papers_controller').default['update']>>>
+    }
+  }
+  'exam_papers.destroy': {
+    methods: ["DELETE"]
+    pattern: '/exam-papers/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/exam_papers_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/exam_papers_controller').default['destroy']>>>
+    }
+  }
   'exam_authorings.show_question': {
     methods: ["GET","HEAD"]
     pattern: '/exam-authorings/questions/:id'

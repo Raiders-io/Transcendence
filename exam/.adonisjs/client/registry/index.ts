@@ -90,6 +90,36 @@ const routes = {
     tokens: [{"old":"/exam-authorings/:id","type":0,"val":"exam-authorings","end":""},{"old":"/exam-authorings/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['exam_authorings.destroy']['types'],
   },
+  'exam_papers.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/exam-papers',
+    tokens: [{"old":"/exam-papers","type":0,"val":"exam-papers","end":""}],
+    types: placeholder as Registry['exam_papers.index']['types'],
+  },
+  'exam_papers.store': {
+    methods: ["POST"],
+    pattern: '/exam-papers',
+    tokens: [{"old":"/exam-papers","type":0,"val":"exam-papers","end":""}],
+    types: placeholder as Registry['exam_papers.store']['types'],
+  },
+  'exam_papers.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/exam-papers/:id',
+    tokens: [{"old":"/exam-papers/:id","type":0,"val":"exam-papers","end":""},{"old":"/exam-papers/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['exam_papers.show']['types'],
+  },
+  'exam_papers.update': {
+    methods: ["PUT","PATCH"],
+    pattern: '/exam-papers/:id',
+    tokens: [{"old":"/exam-papers/:id","type":0,"val":"exam-papers","end":""},{"old":"/exam-papers/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['exam_papers.update']['types'],
+  },
+  'exam_papers.destroy': {
+    methods: ["DELETE"],
+    pattern: '/exam-papers/:id',
+    tokens: [{"old":"/exam-papers/:id","type":0,"val":"exam-papers","end":""},{"old":"/exam-papers/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['exam_papers.destroy']['types'],
+  },
   'exam_authorings.show_question': {
     methods: ["GET","HEAD"],
     pattern: '/exam-authorings/questions/:id',

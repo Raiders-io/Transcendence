@@ -27,18 +27,18 @@ export default class ExamAuthoringsController {
 
     // Attach questions with their position and points
     if (body.questions && Array.isArray(body.questions)) {
+      const questionsData: Record<number, { position: number; points: number }> = {}
+      
       for (const q of body.questions) {
-        await exam.related('questions').attach({
-          [q.id]: {
-            position: q.position ?? 0,
-            points: q.points ?? 0,
-          }
-        })
+        questionsData[q.id] = {
+          position: q.position ?? 0,
+          points: q.points ?? 0,
+        }
       }
+      
+      await exam.related('questions').attach(questionsData)
     }
 
-    // Reload exam with questions
-    await exam.load('questions')
     return exam
   }
 

@@ -32,6 +32,50 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class ExamPaperAnswerSchema extends BaseModel {
+  static $columns = ['answer', 'createdAt', 'examPaperId', 'examsQuestionId', 'id', 'isCorrect', 'updatedAt'] as const
+  $columns = ExamPaperAnswerSchema.$columns
+  @column()
+  declare answer: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare examPaperId: number
+  @column()
+  declare examsQuestionId: number
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isCorrect: boolean | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class ExamPaperSchema extends BaseModel {
+  static $columns = ['completedAt', 'createdAt', 'examId', 'id', 'score', 'startedAt', 'status', 'totalPoints', 'updatedAt', 'userId'] as const
+  $columns = ExamPaperSchema.$columns
+  @column.dateTime()
+  declare completedAt: DateTime | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare examId: number
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare score: number | null
+  @column.dateTime()
+  declare startedAt: DateTime
+  @column()
+  declare status: string | null
+  @column()
+  declare totalPoints: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
 export class ExamSchema extends BaseModel {
   static $columns = ['createdAt', 'id', 'lessonRelatedId', 'title', 'updatedAt', 'userId'] as const
   $columns = ExamSchema.$columns

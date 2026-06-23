@@ -35,4 +35,5 @@ router
 
 router.resource('questions', controllers.Questions).apiOnly()
 router.resource('exam-authorings', controllers.ExamAuthorings).apiOnly()
+router.resource('exam-papers', controllers.ExamPapers).apiOnly()
 router.get('exam-authorings/questions/:id', [controllers.ExamAuthorings, 'showQuestion'])

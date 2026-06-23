@@ -18,6 +18,11 @@ export type ScannedRoutes = {
     'exam_authorings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'exam_authorings.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'exam_authorings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'exam_papers.index': { paramsTuple?: []; params?: {} }
+    'exam_papers.store': { paramsTuple?: []; params?: {} }
+    'exam_papers.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'exam_papers.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'exam_papers.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'exam_authorings.show_question': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   POST: {
@@ -26,6 +31,7 @@ export type ScannedRoutes = {
     'profile.access_tokens.destroy': { paramsTuple?: []; params?: {} }
     'questions.store': { paramsTuple?: []; params?: {} }
     'exam_authorings.store': { paramsTuple?: []; params?: {} }
+    'exam_papers.store': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'profile.profile.show': { paramsTuple?: []; params?: {} }
@@ -33,6 +39,8 @@ export type ScannedRoutes = {
     'questions.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'exam_authorings.index': { paramsTuple?: []; params?: {} }
     'exam_authorings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'exam_papers.index': { paramsTuple?: []; params?: {} }
+    'exam_papers.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'exam_authorings.show_question': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   HEAD: {
@@ -41,19 +49,24 @@ export type ScannedRoutes = {
     'questions.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'exam_authorings.index': { paramsTuple?: []; params?: {} }
     'exam_authorings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'exam_papers.index': { paramsTuple?: []; params?: {} }
+    'exam_papers.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'exam_authorings.show_question': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {
     'questions.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'exam_authorings.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'exam_papers.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PATCH: {
     'questions.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'exam_authorings.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'exam_papers.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   DELETE: {
     'questions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'exam_authorings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'exam_papers.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

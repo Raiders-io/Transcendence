@@ -33,4 +33,11 @@ export interface ApiDefinition {
     destroy: typeof routes['exam_authorings.destroy']
     showQuestion: typeof routes['exam_authorings.show_question']
   }
+  examPapers: {
+    index: typeof routes['exam_papers.index']
+    store: typeof routes['exam_papers.store']
+    show: typeof routes['exam_papers.show']
+    update: typeof routes['exam_papers.update']
+    destroy: typeof routes['exam_papers.destroy']
+  }
 }
