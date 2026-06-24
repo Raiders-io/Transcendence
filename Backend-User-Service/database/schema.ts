@@ -24,9 +24,9 @@ export class FriendshipSchema extends BaseModel {
   declare userId: string
 }
 
-export class LessonCompletionSchema extends BaseModel {
+export class LessonCompletedSchema extends BaseModel {
   static $columns = ['completedAt', 'createdAt', 'id', 'lessonId', 'updatedAt', 'userId'] as const
-  $columns = LessonCompletionSchema.$columns
+  $columns = LessonCompletedSchema.$columns
   @column.dateTime()
   declare completedAt: DateTime
   @column.dateTime({ autoCreate: true })
@@ -41,13 +41,26 @@ export class LessonCompletionSchema extends BaseModel {
   declare userId: string
 }
 
-export class ProfileSchema extends BaseModel {
-  static $columns = ['createdAt', 'id', 'updatedAt', 'username'] as const
-  $columns = ProfileSchema.$columns
+export class LessonOngoingSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'updatedAt'] as const
+  $columns = LessonOngoingSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class UserSchema extends BaseModel {
+  static $columns = ['createdAt', 'email', 'id', 'updatedAt', 'username'] as const
+  $columns = UserSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
   @column()
-  declare id: string | null
+  declare email: string
+  @column({ isPrimary: true })
+  declare id: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
   @column()
