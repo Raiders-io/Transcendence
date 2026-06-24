@@ -77,7 +77,7 @@ export class ExamPaperSchema extends BaseModel {
 }
 
 export class ExamSchema extends BaseModel {
-  static $columns = ['createdAt', 'id', 'lessonRelatedId', 'title', 'updatedAt', 'userId'] as const
+  static $columns = ['createdAt', 'id', 'lessonRelatedId', 'questions', 'title', 'updatedAt', 'userId'] as const
   $columns = ExamSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
@@ -85,6 +85,8 @@ export class ExamSchema extends BaseModel {
   declare id: number
   @column()
   declare lessonRelatedId: string | null
+  @column()
+  declare questions: any | null
   @column()
   declare title: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })

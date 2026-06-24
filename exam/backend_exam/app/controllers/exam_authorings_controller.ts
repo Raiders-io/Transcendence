@@ -19,15 +19,21 @@ export default class ExamAuthoringsController {
   {
     const body = request.body()
 
+    let { title, lesson_related_id, user_id, questions } = request.only(['title', 'lesson_related_id', 'user_id', 'questions'])
+
     const exam = await Exam.create({
-      title: body.title ?? '(null)',
-      lessonRelatedId: body.lesson_related_id ?? null,
-      userId: body.user_id ?? null,
+      title: title ?? '(null)',
+      lessonRelatedId: lesson_related_id ?? null,
+      userId: user_id ?? null,
     })
 
     // Attach questions with their position and points
-    if (body.questions && Array.isArray(body.questions)) {
-      for (const q of body.questions) {
+    if (questions && Array.isArray(questions)) {
+      for (const q of questions) {
+        const question = await Question.find(q.id)
+        if (!question) {
+          return { error: `Question with ID ${q.id} not found`, status: 404 }
+        }
         await exam.related('questions').attach({
           [q.id]: {
             position: q.position ?? 0,
