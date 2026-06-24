@@ -16,3 +16,6 @@
 [submodule "Backend_Auth-Service"]
 	path = Backend_Auth-Service
 	url = git@github.com:Raiders-io/Backend_Auth-Service.git
+[submodule "Backend-User-Service"]
+	path = Backend-User-Service
+	url = git@github.com:Raiders-io/Backend-User-Service
