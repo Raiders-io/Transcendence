@@ -13,7 +13,7 @@ export default class ChatService {
 	}
 
 	async handle(socket: Socket) {
-		const userId: number = socket.handshake.auth.userId
+		const userId: string = socket.handshake.auth.userId
 		socket.join(`user:${userId}`)
 		const rows = await db
 			.from('conversation_participants')
@@ -36,7 +36,7 @@ export default class ChatService {
         socket.on('disconnect', () => console.log(`User ${userId} disconnected`))
 	}
 
-	private async isParticipant(conversationId: number, userId: number): Promise<boolean> {
+	private async isParticipant(conversationId: number, userId: string): Promise<boolean> {
 		console.log('conversationId:', conversationId, 'type:', typeof conversationId)
 		console.log('userId:', userId, 'type:', typeof userId)
 		const participant = await db
@@ -47,12 +47,12 @@ export default class ChatService {
 		return !!participant
 	}
 
-	private async handleCreate(socket: Socket, userId: number, data: { participantIds: number[] }) {
+	private async handleCreate(socket: Socket, userId: string, data: { participantIds: string[] }) {
 		try {
 			const parsedData = typeof data === 'string' ? JSON.parse(data) : data
 			const allIds = [userId, ...parsedData.participantIds]
-			const uniqueIds = [...new Set(allIds)]
-			const memberIds = uniqueIds.sort((a, b) => a - b)
+			const uniqueIds = Array.from(new Set(allIds))
+			const memberIds = uniqueIds.sort((a, b) => a.localeCompare(b))
 
 			const existing = await db
 				.from('conversation_participants')
@@ -93,7 +93,7 @@ export default class ChatService {
 		}
 	}
 
-	private async handleJoin(socket: Socket, userId: number, conversationId: number) {
+	private async handleJoin(socket: Socket, userId: string, conversationId: number) {
 		try {
 			if (!await this.isParticipant(conversationId, userId)) {
 				socket.emit('error', { message: 'Not a participant' })
@@ -108,7 +108,7 @@ export default class ChatService {
     	}
 	}
 
-	private async handleSend(socket: Socket, userId: number, data: {conversationId: number, content: string}) {
+	private async handleSend(socket: Socket, userId: string, data: {conversationId: number, content: string}) {
 		try {
 			if (!await this.isParticipant(data.conversationId, userId)) {
 				socket.emit('error', { message: 'Not a participant' })

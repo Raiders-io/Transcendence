@@ -15,6 +15,7 @@ services:
         condition: service_healthy
     networks:
       - backend-messaging
+      - api-network   
 
   postgres:
     image: postgres:16-alpine
@@ -50,6 +51,8 @@ services:
 networks:
   backend-messaging:
     driver: bridge
+  api-network:
+    external: true  
 
 volumes:
   postgres_data:
