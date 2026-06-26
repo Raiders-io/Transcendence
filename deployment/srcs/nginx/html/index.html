@@ -3,12 +3,20 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Dashboard Testing Lesson and Objects</title>
+	<title>Transcendence</title>
 	<link rel="stylesheet" href="stylesheet.css">
 	<!-- <script async src="script.js"></script> -->
 </head>
 <body>
-<h1><img src="favicon.png" alt="favicon" class="favicon">Raiders.io</h1>
+
+<header class="header">
+	<img src="favicon.png" alt="favicon" class="logo">
+	<nav class="navbar">
+		<button class="nav-link active" data-section="home">Home</button>
+		<button class="nav-link active" data-section="profile">Profile</button>
+		<button class="nav-link active" data-section="objects">Objects</button>
+	</nav>
+</header>
 
 <h2>Object Storage API</h2>
 <h3>POST Signup</h3>
@@ -72,7 +80,7 @@
 	<form id="filesForm" enctype="multipart/form-data">
 		<div>
 		<label for="file">Choose file(s) to upload</label><br>
-		<input type="file" id="file" name="file" multiple />
+		<input type="file" id="file" name="file" multiple accept=".md,.txt,.pdf,.tex"/>
 		</div><br>
 		<div>
 		<button type="submit">Submit</button>
@@ -84,7 +92,7 @@
 	<form id="updateFileForm" enctype="multipart/form-data">
 		<div>
 		<label for="updateFile">Choose new file</label><br>
-		<input type="file" id="updateFile" name="updateFile" required />
+		<input type="file" id="updateFile" name="updateFile" required accept=".md,.txt,.pdf,.tex"/>
 		</div><br>
 		<div>
 		<button type="submit">Submit</button>
@@ -108,7 +116,7 @@
 	<form id="updateMultipleFilesForm" enctype="multipart/form-data">
 		<div>
 		<label for="updateMultipleFiles">Choose new file(s)</label><br>
-		<input type="file" id="updateMultipleFiles" name="updateMultipleFiles" multiple required />
+		<input type="file" id="updateMultipleFiles" name="updateMultipleFiles" multiple required accept=".md,.txt,.pdf,.tex"/>
 		</div><br>
 		<div>
 		<button type="submit">Submit</button>
@@ -152,6 +160,11 @@
 		</div>
 	</form>
 
+<footer>
+	<img src="favicon.png" alt="favicon" class="logo">
+	<a href="https://github.com/Raiders-io/Transcendence">Transcendence on Github</a>
+</footer>
+
 <script>
 	// Fonctions utilitaires pour les cookies
 	function setCookie(name, value, days = 7) {
@@ -169,9 +182,6 @@
 	function deleteCookie(name) {
 		document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
 	}
-
-	// Récupération du token au chargement de la page
-	let authToken = getCookie('authToken') || null;
 
 // Object Storage API - Signup
 document.getElementById('signupForm').addEventListener('submit', async (e) => {
@@ -195,7 +205,7 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
 		alert('Signup failed: ' + (json.message || 'Unknown error'));
 		return;
 	}
-	authToken = json.data.token;
+	const authToken = json.data.token;
 	setCookie('authToken', authToken);
 	console.log('Token récupéré :', authToken);
 	alert('Connected! You are now registered and logged in.');
@@ -206,9 +216,13 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 	e.preventDefault();
 	const form = e.target;
 
+	let authToken = getCookie('authToken') || null;
 	const res = await fetch('https://127.0.0.1:4443/api/v1/storage/auth/login', {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
+		headers: { 
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${authToken}`
+		},
 		body: JSON.stringify({
 			email: form.email.value,
 			password: form.password.value,
@@ -218,7 +232,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 	const json = await res.json();
 	if (!res.ok) {
 		console.error('Login error :', json);
-		alert('Login failed: ' + (json.message || 'Unknown error'));
+		alert('Login failed: ' + (json.error || 'Unknown error'));
 		return;
 	}
 	authToken = json.data.token;
@@ -231,7 +245,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 document.getElementById('profileForm').addEventListener('submit', async (e) => {
 	e.preventDefault();
 	const form = e.target;
-
+	const authToken = getCookie('authToken') || null;
 	if (!authToken) {
 		alert('Please login first !');
 		return;
@@ -250,6 +264,11 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
 // Retrieve Quotas
 document.getElementById('quotasForm').addEventListener('submit', async (e) => {
 	e.preventDefault();
+	const authToken = getCookie('authToken') || null;
+	if (!authToken) {
+		alert('Please login first !');
+		return;
+	}
 
 	try {
         const res = await fetch('https://127.0.0.1:4443/api/v1/storage/quota', {
@@ -330,15 +349,11 @@ document.getElementById('deleteMultipleFilesForm').addEventListener('submit', as
 // Index of files
 document.getElementById('indexFilesForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
-    if (!authToken) {
-        alert('Please login first !');
-        return;
-    }
     await fetchFiles();
 });
 
 async function fetchFiles(page = 1, limit = 10) {
+	const authToken = getCookie('authToken') || null;
 	if (!authToken) {
 		alert('Please login first !');
 		return;
@@ -380,6 +395,7 @@ async function uploadMultipleFiles(fileInput) {
 		alert('Please add at least one file');
 		return;
 	}
+	const authToken = getCookie('authToken') || null;
 	if (!authToken) {
 		alert('Please login first !');
 		return;
@@ -406,6 +422,7 @@ async function updateFile(fileInput) {
 		alert('Please add at least one file');
 		return;
 	}
+	const authToken = getCookie('authToken') || null;
 	if (!authToken) {
 		alert('Please login first !');
 		return;
@@ -437,6 +454,7 @@ async function updateMultipleFile(fileInput) {
 		alert('Please add at least one file');
 		return;
 	}
+	const authToken = getCookie('authToken') || null;
 	if (!authToken) {
 		alert('Please login first !');
 		return;
@@ -793,6 +811,7 @@ async function downloadFile(fileName) {
 		alert('Please enter a file name to download.');
 		return;
 	}
+	const authToken = getCookie('authToken') || null;
 	if (!authToken) {
 		alert('Please login first !');
 		return;
@@ -823,6 +842,7 @@ async function deleteFile(fileName) {
 		alert('Please enter a file name to delete.');
 		return;
 	}
+	const authToken = getCookie('authToken') || null;
 	if (!authToken) {
 		alert('Please login first !');
 		return;
@@ -875,6 +895,7 @@ async function deleteMultipleFiles(fileNames) {
 		alert('Please enter at least one file name');
 		return;
 	}
+	const authToken = getCookie('authToken') || null;
 	if (!authToken) {
 		alert('Please login first !');
 		return;
