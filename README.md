@@ -1,15 +1,24 @@
 # Transcendence
 
+## <a name="introduction-en">📖 Introduction
+
 The project is subdivised in many repositories, and this one's the principal. It regroups all the services for the project.
 
-## How to install
+## 📋 Table of Contents
+
+* [📖 Introduction](#introduction-en)
+* [⚙️ How to install](#howtoinstall-en)
+* [🔧 Architecture](#arch-en)
+* [🚀 How to use](#use-en)
+
+## <a name="howtoinstall-en">⚙️ How to install
 
 ### Requirements
 
 You will need at least :
 
-- `docker` (with docker compose)
-- `admin permissions` if you want to modify the `/etc/hosts` file (and use the URL, `https://raiders.io/`, instead of `https://127.0.0.1/`)
+* `docker` (with docker compose)
+* `admin permissions` if you want to modify the `/etc/hosts` file (and use the URL, `https://raiders.io/`, instead of `https://127.0.0.1/`)
 
 ### Install the project
 
@@ -39,6 +48,23 @@ git submodule update --remote [name]
 
 Optional : `name`, update only the given remote.
 
-## Architecture
+## <a name="arch-en">🔧 Architecture
 
 See the [ARCH.md in docs/](docs/ARCH.md).
+
+## <a name="use-en">🚀 How to use
+
+Currently, you need to execute to go in each submodules, and execute the following command :
+
+```sh
+make env
+```
+
+It should configurate the project environment and prepare for the full build.
+When you finished, enter in the `deployment` directory, and execute :
+
+```sh
+make build-all
+```
+
+When everything is ready, it should be accessible through `https://localhost/` and `https://$(hostname)/`.

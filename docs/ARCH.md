@@ -4,12 +4,6 @@
 > The graph belows represents the architecture of the project. It may not be updated to the current implementation.
 
 ```mermaid
----
-config:
-  layout: dagre
-  theme: neo
-  look: neo
----
 flowchart LR
     subgraph s0["External Docker Network"]
         User["User"]
