@@ -61,17 +61,7 @@ export default class ChatService {
 				.groupBy('conversation_id')
 				.havingRaw('count(distinct user_id) = ?', [memberIds.length])
 
-			let conversationId: number | null = null
-			for (const row of existing) {
-				const count = await db
-					.from('conversation_participants')
-					.where('conversation_id', row.conversation_id)
-					.count('* as total')
-				if (Number(count[0].total) === memberIds.length) {
-					conversationId = row.conversation_id
-					break
-				}
-			}
+			let conversationId = existing.length > 0 ? existing[0].conversation_id : null
 
 			if (conversationId === null) {
 				const conversation = await Conversation.create({})
@@ -121,7 +111,7 @@ export default class ChatService {
 			})
 			this.io
 				.to(`conversation:${data.conversationId}`)
-			.emit('message:received', message)
+				.emit('message:received', message)
 		}
 		catch (error) {
 			console.error('handleCreate error:', error)
