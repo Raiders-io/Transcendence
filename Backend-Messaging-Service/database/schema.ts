@@ -70,7 +70,7 @@ export class MessageSchema extends BaseModel {
   @column.dateTime()
   declare readAt: DateTime | null
   @column()
-  declare senderId: number
+  declare senderId: string
 }
 
 export class UserSchema extends BaseModel {

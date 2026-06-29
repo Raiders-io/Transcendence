@@ -11,7 +11,7 @@ export default class Message extends BaseModel {
 	declare conversationId: number
 
 	@column()
-	declare senderId: number
+	declare senderId: string
 
 	@column()
 	declare content: string
