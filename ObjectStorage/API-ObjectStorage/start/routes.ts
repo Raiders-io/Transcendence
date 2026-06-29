@@ -16,69 +16,73 @@ router.get('/', () => {
   return { hello: 'world' }
 })
 
-// router.post('/profile/avatar', [controllers.ProfileAvatars, 'update']).as('updateProfileAvatar').use(middleware.auth()).use(middleware.cleanupUploads()) // Add the cleanup middleware to this route
+/**
+ * Storage service routes
+ * Starts with /api/v1/storage
+ */
 
-// Storage service routes
-// CRUD : create, read, update, and delete
-// - Create: POST /storage/objects
-// - Read: GET /storage/objects/:id
-// - Update: PUT /storage/objects/:id
-// - Update: PUT /storage/objects/ (bulk update)
-// - Delete: DELETE /storage/objects/:id
-// - Delete: DELETE /storage/objects/ (bulk delete)
-// Only authenticated users can access these routes, but for now we will leave them open for testing purposes.
+/**
+ * Starts with /objects
+ * CRUD : create, read, update, and delete
+ * - Create: POST   /
+ * - Read:   GET    /:id
+ * - Update: PUT    /:id
+ * - Update: PUT    / (bulk update)
+ * - Delete: DELETE /:id
+ * - Delete: DELETE / (bulk delete)
+ * - Patch:  PATCH  /:id (update partially)
+ * Only authenticated users can access these routes, but for now we will leave them open for testing purposes.
+ */
+
+/**
+ * Starts with /users
+ * - Read:   GET    /:userid/objects/
+ * - Read:   GET    /:userid/objects/:id
+ */
 router
   .group(() => {
     router
       .group(() => {
-        router.get('/', [controllers.AccessObjects, 'index']).as('listObjects')
+        // Basics routes for objects
+        router
+          .group(() => {
+            router.get('/', [controllers.AccessObjects, 'index']).as('listObjects')
+            router.post('/', [controllers.AccessObjects, 'store']).as('createObject')
+            router.put('/', [controllers.AccessObjects, 'updateMany']).as('bulkUpdateObjects')
+            router.delete('/', [controllers.AccessObjects, 'destroyMany']).as('bulkDeleteObjects')
+            router.get('/:id', [controllers.AccessObjects, 'show']).as('getObject')
+            router.put('/:id', [controllers.AccessObjects, 'update']).as('updateObject')
+            router.delete('/:id', [controllers.AccessObjects, 'destroy']).as('deleteObject')
+            router.patch('/:id', [controllers.AccessObjects, 'updateInfo']).as('updateObjectInfo')
+          })
+          .prefix('/objects')
+          .as('objects')
 
-        router.post('/', [controllers.AccessObjects, 'store']).as('createObject')
-
-        router.put('/', [controllers.AccessObjects, 'updateMany']).as('bulkUpdateObjects')
-
-        router.delete('/', [controllers.AccessObjects, 'destroyMany']).as('bulkDeleteObjects')
-
-        router.get('/:id', [controllers.AccessObjects, 'show']).as('getObject')
-
-        router.put('/:id', [controllers.AccessObjects, 'update']).as('updateObject')
-
-        router.delete('/:id', [controllers.AccessObjects, 'destroy']).as('deleteObject')
+        // Special routes for Accessing objects from other users
+        router
+          .group(() => {
+            router
+              .get('/:userid/objects/', [controllers.AccessObjects, 'indexFrom'])
+              .as('listObjectFrom')
+            router
+              .get('/:userid/objects/:id', [controllers.AccessObjects, 'showFrom'])
+              .as('getObjectFrom')
+          })
+          .prefix('/users')
+          .as('users')
       })
-      .prefix('/objects')
-      .as('objects')
-      .use(middleware.auth())
+      .use(middleware.verifyToken())
       .use(middleware.cleanupUploads())
 
     // Quota routes
     // - Retrieve quota: GET /quota
     router
       .group(() => {
-        router.get('/', [controllers.Quotas, 'index']).as('retrieveQuota').use(middleware.auth())
+        router.get('/', [controllers.Quotas, 'index']).as('retrieveQuota')
       })
+      .use(middleware.verifyToken())
       .prefix('/quota')
       .as('quota')
-
-    // TODO: Auth routes are handled by another service
-    router.group(() => {
-      router
-        .group(() => {
-          router.post('signup', [controllers.NewAccount, 'store'])
-          router.post('login', [controllers.AccessTokens, 'store'])
-        })
-        .prefix('/auth')
-        .as('auth')
-        .use(middleware.guest())
-
-      router
-        .group(() => {
-          router.get('profile', [controllers.Profile, 'show'])
-          router.post('logout', [controllers.AccessTokens, 'destroy'])
-        })
-        .prefix('/account')
-        .as('profile')
-        .use(middleware.auth())
-    })
   })
   .prefix('/api/v1/storage')
   .as('storage')

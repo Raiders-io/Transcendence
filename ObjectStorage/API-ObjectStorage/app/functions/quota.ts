@@ -35,7 +35,7 @@ function createQuotaUsage(quota: Quota, resetCount?: boolean): QuotaUsage {
   }
 }
 
-async function getOrCreateQuota(userId: number): Promise<Quota> {
+async function getOrCreateQuota(userId: string): Promise<Quota> {
   const existingQuota = await Quota.query().where('user_id', userId).first()
 
   if (existingQuota) {
@@ -45,7 +45,7 @@ async function getOrCreateQuota(userId: number): Promise<Quota> {
   return await Quota.create({ userId })
 }
 
-async function resetDailyCounts(userId: number): Promise<QuotaUsage> {
+async function resetDailyCounts(userId: string): Promise<QuotaUsage> {
   await getOrCreateQuota(userId)
   const quotaRow = await Quota.query()
     .select(
@@ -96,11 +96,11 @@ async function resetDailyCounts(userId: number): Promise<QuotaUsage> {
   return createQuotaUsage(quotaRow, true)
 }
 
-export async function QuotaGetUserQuota(userId: number): Promise<QuotaUsage | null> {
+export async function QuotaGetUserQuota(userId: string): Promise<QuotaUsage | null> {
   return await resetDailyCounts(userId)
 }
 
-export async function QuotaTryToUpload(userId: number, newObjectSize: bigint) {
+export async function QuotaTryToUpload(userId: string, newObjectSize: bigint) {
   const quotaUsage = await QuotaGetUserQuota(userId)
   if (!quotaUsage) {
     throw new Error('Failed to fetch user quotaUsage')
@@ -124,19 +124,54 @@ export async function QuotaTryToUpload(userId: number, newObjectSize: bigint) {
     })
 }
 
-export async function QuotaTryToUpdate(userId: number, newObjectSize: bigint) {
-  /**
-   * When replacing, the new object will replace the old one, so but at a time,
-   * the two objects coexists. The total storage bytes shouldn't exceed the limit
-   * even during the upload process. The temporary object is stored firstly in API,
-   * then moved to ObjectStorage. As we can't trust the incomming file size,
-   * we need to check the quota after the file is uploaded.
-   * If the quota is exceeded, we should delete the temporary file and return an error.
-   *  */
-  await QuotaTryToUpload(userId, newObjectSize)
+export async function QuotaVerifyForUpdate(userId: string, newObjectSize: bigint) {
+  const quotaUsage = await QuotaGetUserQuota(userId)
+  if (!quotaUsage) {
+    throw new Error('Failed to fetch user quotaUsage')
+  }
+
+  if (BigInt(quotaUsage.storageBytes) + newObjectSize > BigInt(quotaUsage.storageBytesLimit)) {
+    throw new Error('Storage bytes limit exceeded')
+  }
+
+  return quotaUsage
 }
 
-export async function QuotaTryToDownload(userId: number) {
+/**
+ * When replacing, the new object will replace the old one, so but at a time,
+ * the two objects coexists. The total storage bytes shouldn't exceed the limit
+ * even during the upload process. The temporary object is stored firstly in API,
+ * then moved to ObjectStorage. As we can't trust the incomming file size,
+ * we need to check the quota after the file is uploaded.
+ * If the quota is exceeded, we should delete the temporary file and return an error.
+ *  */
+export async function QuotaTryToUpdate(
+  userId: string,
+  newObjectSize: bigint,
+  oldObjectSize: bigint
+) {
+  const quotaUsage = await QuotaGetUserQuota(userId)
+  if (!quotaUsage) {
+    throw new Error('Failed to fetch user quotaUsage')
+  }
+
+  if (
+    BigInt(quotaUsage.storageBytes) + newObjectSize - oldObjectSize >
+    BigInt(quotaUsage.storageBytesLimit)
+  ) {
+    throw new Error('Storage bytes limit exceeded')
+  }
+
+  await Quota.query()
+    .where('user_id', userId)
+    .update({
+      storage_bytes: (BigInt(quotaUsage.storageBytes) + newObjectSize - oldObjectSize).toString(),
+      upload_count: (BigInt(quotaUsage.uploadCount) + BigInt(1)).toString(),
+      updated_at: new Date(),
+    })
+}
+
+export async function QuotaTryToDownload(userId: string) {
   const quotaUsage = await QuotaGetUserQuota(userId)
   if (!quotaUsage) {
     throw new Error('Failed to fetch user quotaUsage')
@@ -154,7 +189,7 @@ export async function QuotaTryToDownload(userId: number) {
     })
 }
 
-export async function QuotaTryToDelete(userId: number, objectSize: bigint) {
+export async function QuotaTryToDelete(userId: string, objectSize: bigint) {
   const quotaUsage = await QuotaGetUserQuota(userId)
   if (!quotaUsage) {
     throw new Error('Failed to fetch user quota')
