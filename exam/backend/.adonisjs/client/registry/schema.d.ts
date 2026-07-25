@@ -247,4 +247,16 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/exam_authorings_controller').default['showQuestion']>>>
     }
   }
+  'questions.types': {
+    methods: ["GET","HEAD"]
+    pattern: '/questions/types'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/questions_controller').default['types']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/questions_controller').default['types']>>>
+    }
+  }
 }

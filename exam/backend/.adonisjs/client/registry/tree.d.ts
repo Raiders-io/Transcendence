@@ -24,6 +24,7 @@ export interface ApiDefinition {
     show: typeof routes['questions.show']
     update: typeof routes['questions.update']
     destroy: typeof routes['questions.destroy']
+    types: typeof routes['questions.types']
   }
   examAuthorings: {
     index: typeof routes['exam_authorings.index']

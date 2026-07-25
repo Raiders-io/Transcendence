@@ -126,6 +126,12 @@ const routes = {
     tokens: [{"old":"/exam-authorings/questions/:id","type":0,"val":"exam-authorings","end":""},{"old":"/exam-authorings/questions/:id","type":0,"val":"questions","end":""},{"old":"/exam-authorings/questions/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['exam_authorings.show_question']['types'],
   },
+  'questions.types': {
+    methods: ["GET","HEAD"],
+    pattern: '/questions/types',
+    tokens: [{"old":"/questions/types","type":0,"val":"questions","end":""},{"old":"/questions/types","type":0,"val":"types","end":""}],
+    types: placeholder as Registry['questions.types']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }
