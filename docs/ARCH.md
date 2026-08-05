@@ -23,32 +23,38 @@ flowchart LR
         Network["Network"]
         API_Auth["Auth API"]
         API_Obj["Object API"]
-        API_Profile["Profile API"]
+        API_Msg["Message API"]
         API_Lesson["Lesson API"]
+        API_Profile["Profile API"]
         API_Exam["Exam API"]
     end
-    subgraph s2["Object Network"]
-        DB_Obj[("Object DB")]
-        STO_Obj[("Object S3")]
-    end
-    subgraph s3["Lesson Network"]
-        DB_Lesson[("Lesson DB")]
-    end
-    subgraph s4["Auth Network"]
-        DB_Auth[("Auth DB")]
-    end
-    subgraph s5["Profile Network"]
-        DB_Profile[("Profile DB")]
+    subgraph s7["Message Network"]
+        DB_Msg[("Message DB")]
+        Cache_Msg[("Message Cache")]
     end
     subgraph s6["Exam Network"]
         DB_Exam[("Exam DB")]
+    end
+    subgraph s5["Object Network"]
+        DB_Obj[("Object DB")]
+        STO_Obj[("Object S3")]
+    end
+    subgraph s4["Lesson Network"]
+        DB_Lesson[("Lesson DB")]
+    end
+    subgraph s3["Profile Network"]
+        DB_Profile[("Profile DB")]
+    end
+    subgraph s2["Auth Network"]
+        DB_Auth[("Auth DB")]
     end
 
     User --> Nginx
     Nginx --> GW
     GW <--> Network
-    Network <--> API_Obj & API_Lesson & API_Auth & API_Profile & API_Exam 
+    Network <--> API_Obj & API_Msg & API_Lesson & API_Auth & API_Profile & API_Exam 
     API_Obj --> DB_Obj & STO_Obj
+    API_Msg --> DB_Msg & Cache_Msg
     API_Lesson --> DB_Lesson
     API_Auth --> DB_Auth
     API_Profile --> DB_Profile
