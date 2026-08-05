@@ -5,16 +5,13 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
+      table.uuid('id').primary().unique()
       table
         .uuid('lesson_id')
         .notNullable()
-        .references('id')
+        .references('lesson_id')
         .inTable('lesson_headers')
         .onDelete('CASCADE')
-
-      table
-        .string('filename')
-        .notNullable()
 
       table.timestamp('created_at')
       table.timestamp('updated_at')

@@ -7,12 +7,13 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.string('title').notNullable()
-      table.uuid('lesson_id').notNullable().unique()
+      table.uuid('lesson_id').notNullable().unique().primary()
       table.string('slug').notNullable().unique()
       table.uuid('author_id').notNullable()
       table.boolean('is_private').notNullable().defaultTo(false) //TODO : remove defaultTo and handle it in the controller
       table.timestamp('created_at')
       table.timestamp('updated_at')
+      table.float('pertinence').notNullable().defaultTo(0) //TODO : remove defaultTo and handle it in the controller
     })
   }
 

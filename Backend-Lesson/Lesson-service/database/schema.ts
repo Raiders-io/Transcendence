@@ -32,19 +32,36 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class FileSchema extends BaseModel {
+  static $columns = ['createdAt', 'fileName', 'id', 'lessonId', 'updatedAt'] as const
+  $columns = FileSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare fileName: string
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare lessonId: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class LessonHeaderSchema extends BaseModel {
-  static $columns = ['authorId', 'createdAt', 'id', 'isPrivate', 'lessonId', 'slug', 'title', 'updatedAt'] as const
+  static $columns = ['authorId', 'createdAt', 'id', 'isPrivate', 'lessonId', 'pertinence', 'slug', 'title', 'updatedAt'] as const
   $columns = LessonHeaderSchema.$columns
   @column()
   declare authorId: string
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
-  @column({ isPrimary: true })
+  @column()
   declare id: number
   @column()
   declare isPrivate: boolean
-  @column()
+  @column({ isPrimary: true })
   declare lessonId: string
+  @column()
+  declare pertinence: number
   @column()
   declare slug: string
   @column()

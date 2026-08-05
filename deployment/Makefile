@@ -18,21 +18,24 @@ build-all:
 	@$(MAKE) $(NAME)
 	@$(MAKE) build-ObjectStorage
 	@$(MAKE) build-Backend-Auth-Service
-	@$(MAKE) build-Backend-Messaging-Service
+# 	@$(MAKE) build-Backend-Messaging-Service
 # 	@$(MAKE) launch-Frontend
-# 	@$(MAKE) build-Backend-Lesson
+	@$(MAKE) build-Backend-Lesson
 
 build-ObjectStorage:
 	cd ../ObjectStorage && $(MAKE) all
 
 build-Backend-Lesson:
-	cd ../Backend-Lesson && docker compose -f docker-compose.yml up -d --build --force-recreate --remove-orphans
+	cd ../Backend-Lesson && $(MAKE) all
 
 build-Backend-Auth-Service:
 	cd ../Backend_Auth-Service && docker compose -f compose.yml up -d --build --force-recreate --remove-orphans
 
 build-Backend-Messaging-Service:
 	cd ../Backend-Messaging-Service && docker compose -f compose.yml up -d --build --force-recreate --remove-orphans
+
+build-Backend-User-Service:
+	cd ../Backend-User-Service && docker compose -f compose.yml up -d --build --force-recreate --remove-orphans
 
 launch-Frontend:
 	cd ../Frontend && npm run dev
