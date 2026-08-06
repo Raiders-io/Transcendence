@@ -66,6 +66,7 @@
     "@socket.io/redis-adapter": "^8.3.0",
     "@tuyau/core": "^1.2.2",
     "@vinejs/vine": "^4.3.1",
+    "@yosone/broker": "^1.0.5",
     "ioredis": "^5.10.1",
     "luxon": "^3.7.2",
     "pg": "^8.21.0",
