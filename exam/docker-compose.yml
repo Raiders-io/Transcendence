@@ -1,0 +1,62 @@
+services:
+  exam-api:
+    image: exam_api:local
+    container_name: exam_api
+    build:
+      context: ./backend/
+    ports:
+      - "${PORT}:3333"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    environment:
+      DB_CONNECTION: ${DB_CONNECTION}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      TZ: ${TZ}
+      PORT: 3333
+      HOST: ${HOST}
+      NODE_ENV: ${NODE_ENV}
+      LOG_LEVEL: ${LOG_LEVEL}
+      APP_KEY: ${APP_KEY}
+      APP_URL: ${APP_URL}
+      SESSION_DRIVER: ${SESSION_DRIVER}
+    networks:
+      - default-network
+      - public-network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  postgresql:
+    container_name: exam-postgres
+    image: postgres:18.4-alpine3.23
+    # ports:
+    #   - "5432:5432" #TODO : Expose port only in dev mode, not in production
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_PORT: ${DB_PORT}
+    volumes:
+      - ./postgresql-data:/var/lib/postgresql
+    networks:
+      - default-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "${DB_DATABASE}"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+networks:
+  default-network:
+    driver: bridge
+    internal: true
+  public-network:
+    driver: bridge
+    external: true
