@@ -19,3 +19,6 @@
 [submodule "Backend-User-Service"]
 	path = Backend-User-Service
 	url = git@github.com:Raiders-io/Backend-User-Service
+[submodule "exam"]
+	path = exam
+	url = git@github.com:Raiders-io/exam
