@@ -14,11 +14,20 @@ import {
   ObjectResponseType,
   ObjectResponseTypeSuccess,
   ObjectResponseTypeError,
+  type ObjectError,
+  type ObjectSuccess,
 } from '#class/objects'
-import { disk, diskName, calculatePrefix } from '#services/disk'
+import { getDisk, diskName, calculatePrefix } from '#services/disk'
+
+import { QuotaError } from '#class/quota'
 
 export default class AccessObjectsController {
-  async index({ request, response }: HttpContext) {
+  async index({
+    request,
+    response,
+  }: HttpContext): Promise<
+    { message: string; objects: any } | { __response: string; __status: number }
+  > {
     const userId = request.ctx?.userId || ''
     if (!userId || userId === '') throw new Error('User ID not found in context')
 
@@ -36,11 +45,16 @@ export default class AccessObjectsController {
       if (!result) throw new Error('Index Query')
       return { message: ObjectResponseTypeSuccess.IndexSuccess, objects: result }
     } catch (error) {
-      return response.badRequest({ error: ObjectResponseTypeError.IndexError })
+      return response.badRequest(ObjectResponseTypeError.IndexError)
     }
   }
 
-  async store({ request, response }: HttpContext) {
+  async store({
+    request,
+    response,
+  }: HttpContext): Promise<
+    { objects: (ObjectError | ObjectSuccess)[] } | { __response: string; __status: number }
+  > {
     const userId = request.ctx?.userId || ''
     if (!userId || userId === '') throw new Error('User ID not found in context')
 
@@ -58,7 +72,7 @@ export default class AccessObjectsController {
 
       if (
         (await Object.query().where('owner_id', userId).where('key', s3Path).first()) ||
-        (await disk.exists(s3Path))
+        (await getDisk().exists(s3Path))
       ) {
         objects.addError({ key: s3Path, error: ObjectResponseTypeError.UploadAlreadyExists })
         continue
@@ -124,9 +138,9 @@ export default class AccessObjectsController {
     const prefix = calculatePrefix(userId, params.id) // List only files for the authenticated user
     if (
       (await Object.query().where('owner_id', userId).where('key', prefix).first()) ||
-      (await disk.exists(prefix))
+      (await getDisk().exists(prefix))
     ) {
-      const stream = await disk.getStream(prefix)
+      const stream = await getDisk().getStream(prefix)
       response.header('Content-Disposition', `attachment; filename="${params.id}"`)
       response.header('Content-Type', 'application/octet-stream')
       return response.stream(stream)
@@ -167,7 +181,11 @@ export default class AccessObjectsController {
     try {
       await QuotaVerifyForUpdate(userId, BigInt(file.size))
     } catch (error) {
-      return response.badRequest((error as Error).message)
+      console.log('QuotaVerifyForUpdate error:', (error as Error).message)
+      return response.badRequest({
+        key: params.id,
+        error: QuotaError.NoUpdateRemaining,
+      })
     }
 
     const prefix = calculatePrefix(userId, params.id)
@@ -176,7 +194,7 @@ export default class AccessObjectsController {
       .where('owner_id', userId)
       .where('key', prefix)
       .first()
-    if (!query || !(await disk.exists(prefix))) {
+    if (!query || !(await getDisk().exists(prefix))) {
       return response.notFound({
         key: params.id,
         error: ObjectResponseTypeError.NotFound,
@@ -228,7 +246,7 @@ export default class AccessObjectsController {
         .where('owner_id', userId)
         .where('key', prefix)
         .first()
-      if (!query || !(await disk.exists(prefix))) {
+      if (!query || !(await getDisk().exists(prefix))) {
         objects.addError({ key: file.clientName, error: ObjectResponseTypeError.NotFound })
         continue
       }
@@ -262,7 +280,7 @@ export default class AccessObjectsController {
 
     const prefix = calculatePrefix(userId, id)
     const query = await Object.query().where('owner_id', userId).where('key', prefix).first()
-    if (!query || !(await disk.exists(prefix))) {
+    if (!query || !(await getDisk().exists(prefix))) {
       return response.notFound({
         key: id,
         error: ObjectResponseTypeError.NotFound,
@@ -273,7 +291,7 @@ export default class AccessObjectsController {
     } catch (error) {
       return response.badRequest((error as Error).message)
     }
-    await disk.delete(prefix)
+    await getDisk().delete(prefix)
     await Object.query().where('owner_id', userId).where('key', prefix).delete()
 
     return response.noContent({
@@ -300,7 +318,7 @@ export default class AccessObjectsController {
     for (const id of ids) {
       const prefix = calculatePrefix(userId, id)
       const query = await Object.query().where('owner_id', userId).where('key', prefix).first()
-      if (!query || !(await disk.exists(prefix))) {
+      if (!query || !(await getDisk().exists(prefix))) {
         objects.addError({ key: id, error: ObjectResponseTypeError.NotFound })
         continue
       }
@@ -314,7 +332,7 @@ export default class AccessObjectsController {
         })
       }
 
-      await disk.delete(prefix)
+      await getDisk().delete(prefix)
       await Object.query().where('owner_id', userId).where('key', prefix).delete()
       objects.addSuccess({ key: id, message: ObjectResponseTypeSuccess.DeleteSuccess })
     }
@@ -404,9 +422,9 @@ export default class AccessObjectsController {
           .where('key', prefix)
           .where('visibility', 'public')
           .first()) ||
-        (await disk.exists(prefix))
+        (await getDisk().exists(prefix))
       ) {
-        const stream = await disk.getStream(prefix)
+        const stream = await getDisk().getStream(prefix)
         response.header('Content-Disposition', `attachment; filename="${params.id}"`)
         response.header('Content-Type', 'application/octet-stream')
         return response.stream(stream)

@@ -51,7 +51,7 @@ services:
       context: ./Frontend
     image: frontend-builder:local
     volumes:
-      - frontend-builder-data:/app/:rw
+      - frontend-builder-data:/src:rw
       - nginx-html:/app/dist:rw
     restart: no
 

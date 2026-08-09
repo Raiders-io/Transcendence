@@ -7,6 +7,6 @@ WORKDIR /app
 # ----------------------------
 FROM base AS deps
 COPY package*.json ./
-RUN npm ci
+RUN npm install --include=dev
 
-CMD ["npm", "run", "build"]
+CMD ["sh", "-c", "cp -a /src/. /app/ && npm run build"]
