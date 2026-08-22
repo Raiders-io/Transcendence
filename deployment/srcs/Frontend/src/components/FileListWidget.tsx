@@ -25,8 +25,7 @@ import FileListTableBodyRow from "@/components/file-list/file-list-table-body-ro
 import {
   type FileListWidgetProps,
   type FileObject,
-  type PaginationMeta,
-  type ObjectIndexResponse,
+  type MetaPagination,
 } from "@/utils/types/object"
 import {
   Table,
@@ -36,88 +35,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-function isFileObject(value: unknown): value is FileObject {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "name" in value &&
-    typeof (value as FileObject).name === "string"
-  )
-}
-
-function resolveFileList(payload: unknown): {
-  files: FileObject[]
-  meta: PaginationMeta | null
-} {
-  if (Array.isArray(payload)) {
-    return {
-      files: payload.filter(isFileObject),
-      meta: null,
-    }
-  }
-
-  if (!payload || typeof payload !== "object") {
-    return {
-      files: [],
-      meta: null,
-    }
-  }
-
-  const response = payload as ObjectIndexResponse & {
-    files?: unknown
-    results?: unknown
-    data?: unknown
-    objects?: unknown
-    meta?: PaginationMeta
-  }
-
-  const nestedCandidates = [
-    response.data,
-    response.objects,
-    response.files,
-    response.results,
-  ]
-  for (const candidate of nestedCandidates) {
-    if (Array.isArray(candidate)) {
-      return {
-        files: candidate.filter(isFileObject),
-        meta: response.meta ?? null,
-      }
-    }
-  }
-
-  for (const candidate of nestedCandidates) {
-    if (candidate && typeof candidate === "object") {
-      const nested = candidate as ObjectIndexResponse & {
-        files?: unknown
-        results?: unknown
-        data?: unknown
-        objects?: unknown
-        meta?: PaginationMeta
-      }
-      const nestedArrays = [
-        nested.data,
-        nested.objects,
-        nested.files,
-        nested.results,
-      ]
-      for (const nestedCandidate of nestedArrays) {
-        if (Array.isArray(nestedCandidate)) {
-          return {
-            files: nestedCandidate.filter(isFileObject),
-            meta: nested.meta ?? response.meta ?? null,
-          }
-        }
-      }
-    }
-  }
-
-  return {
-    files: [],
-    meta: response.meta ?? null,
-  }
-}
+import {
+  AudioLines,
+  FileArchiveIcon,
+  FileImageIcon,
+  FileJsonIcon,
+  FileText,
+  MonitorPlay,
+  ScrollText,
+  Type,
+} from "lucide-react"
+import { TrashIcon } from "lucide-react"
+import { DeleteButton } from "@/components/DeleteButton"
 
 export default function FileListWidget({
   mode = "full",
@@ -135,31 +64,12 @@ export default function FileListWidget({
   const [uploadSuccess, setUploadSuccess] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(initialLimit)
-  const [meta, setMeta] = useState<PaginationMeta | null>(null)
+  const [meta, setMeta] = useState<MetaPagination | null>(null)
+  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set())
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
-    const loadFiles = async () => {
-      setLoading(true)
-      setError(null)
-
-      try {
-        const response = await objectService.index(page, limit)
-        const resolved = resolveFileList(response)
-
-        setFiles(resolved.files)
-        setMeta(resolved.meta)
-      } catch (requestError) {
-        console.error("File list error:", requestError)
-        setError("Impossible to load the file list.")
-        setFiles([])
-        setMeta(null)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    void loadFiles()
+    void refreshFiles()
   }, [page, limit])
 
   useEffect(() => {
@@ -237,18 +147,23 @@ export default function FileListWidget({
   }
 
   const getFileIcon = (mimeType?: string, fileName?: string) => {
-    const label = `${mimeType ?? ""} ${fileName ?? ""}`.toLowerCase()
+    const label = `${mimeType ?? ""} ${fileName?.match(/\.[^\.]+$/)?.[0] ?? ""}`.toLowerCase() ?? ""
 
-    if (label.includes("image")) return "🖼️"
-    if (label.includes("video")) return "🎞️"
-    if (label.includes("audio")) return "🎵"
-    if (label.includes("pdf")) return "📕"
+    if (label.includes("image")) 
+      return <FileImageIcon className="h-4 w-4" />
+    if (label.includes("video")) 
+      return <MonitorPlay className="h-4 w-4" />
+    if (label.includes("audio")) 
+      return <AudioLines className="h-4 w-4" />
+    if (label.includes("pdf")) 
+      return <ScrollText className="h-4 w-4" />
     if (label.includes("zip") || label.includes("rar") || label.includes("tar"))
-      return "🗜️"
-    if (label.includes("json")) return "🧩"
-    if (label.includes("text") || label.includes("plain")) return "📄"
-
-    return "📁"
+      return <FileArchiveIcon className="h-4 w-4" />
+    if (label.includes("json")) 
+      return <FileJsonIcon className="h-4 w-4" />
+    if (label.includes("text") || label.includes("plain") || label.includes("markdown")) 
+      return <FileText className="h-4 w-4" />
+    return <Type className="h-4 w-4" />
   }
 
   const refreshFiles = async () => {
@@ -257,10 +172,8 @@ export default function FileListWidget({
 
     try {
       const response = await objectService.index(page, limit)
-      const resolved = resolveFileList(response)
-
-      setFiles(resolved.files)
-      setMeta(resolved.meta)
+      setFiles(response.objects.data)
+      setMeta(response.objects.meta)
     } catch (requestError) {
       console.error("File list error:", requestError)
       setError("Impossible to load the file list.")
@@ -348,8 +261,55 @@ export default function FileListWidget({
     mode === "compact" ? "w-full p-4" : "mx-auto w-full max-w-6xl p-6"
   const visibleColumns: FileListTableColumn[] =
     mode === "compact"
-      ? ["Icon", "Name", "Size"]
-      : ["Icon", "Name", "Size", "Type", "Visibility", "Created at"]
+      ? ["Select", "Icon", "Name", "Size", "Actions"]
+      : ["Select", "Icon", "Name", "Size", "Type", "Visibility", "Created at", "Actions"]
+
+  const toggleFileSelection = (fileName: string) => {
+    setSelectedFiles((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(fileName)) {
+        newSet.delete(fileName)
+      } else {
+        newSet.add(fileName)
+      }
+      return newSet
+    })
+  }
+
+  const handleDownload = async (fileName: string) => {
+    try {
+      const blob = await objectService.download(fileName)
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.setAttribute("download", fileName)
+      document.body.appendChild(link)
+      link.click()
+      link.parentNode?.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error("Download error:", error)
+    }
+  }
+
+  const handleDelete = async (fileName: string) => {
+    try {
+      await objectService.destroy(fileName)
+      await refreshFiles()
+    } catch (error) {
+      console.error('Delete error:', error)
+    }
+  }
+
+  const handleBulkDelete = async () => {
+    try {
+      await objectService.destroyMany(Array.from(selectedFiles))
+      setSelectedFiles(new Set())
+      await refreshFiles()
+    } catch (error) {
+      console.error('Bulk delete error:', error)
+    }
+  }
 
   return (
     <div
@@ -466,6 +426,10 @@ export default function FileListWidget({
                       formatFileSize={formatFileSize}
                       formatDate={formatDate}
                       compact={mode === "compact"}
+                      onSelect={toggleFileSelection}
+                      onDownload={handleDownload}
+                      onDelete={handleDelete}
+                      isSelected={selectedFiles.has(file.name)}
                     />
                   ))}
                 </TableBody>
@@ -473,6 +437,18 @@ export default function FileListWidget({
                   <TableFooter>
                     <TableRow>
                       <TableCell colSpan={3}>
+                        <div className="flex items-center gap-2">
+                          {selectedFiles.size > 0 && (
+                            <DeleteButton action={handleBulkDelete} title="Delete Selected Files" description={`The following files will be deleted:\n\n${Array.from(selectedFiles).map((element) => `- ${element}`).join("\n")}.\n\nThis action cannot be undone.`}>
+                              <Button variant="destructive" size="sm">
+                                <TrashIcon />
+                                Delete Selected
+                              </Button>
+                            </DeleteButton>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell colSpan={3} className="text-right">
                         Total: {totalFiles} file(s)
                       </TableCell>
                       <TableCell colSpan={3} className="text-right">
