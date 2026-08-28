@@ -144,6 +144,16 @@ export default function FileListWidget({
       const response = await objectService.index(page, limit)
       setFiles(response.objects.data)
       setMeta(response.objects.meta)
+      setSelectedFiles((prev) => {
+        const newSet = new Set(prev)
+        const currentFileNames = new Set(response.objects.data.map((f) => f.name))
+        for (const fileName of prev) {
+          if (!currentFileNames.has(fileName)) {
+            newSet.delete(fileName)
+          }
+        }
+        return newSet
+      })
     } catch (requestError) {
       console.error("File list error:", requestError)
       setError("Impossible to load the file list.")
@@ -265,7 +275,14 @@ export default function FileListWidget({
   const handleDelete = async (fileName: string) => {
     try {
       await objectService.destroy(fileName)
-      await refreshFiles()
+      setSelectedFiles((prev) => {
+        const newSet = new Set(prev)
+        newSet.delete(fileName)
+        return newSet
+      })
+      if (files.length === 1 && page > 1) {
+        setPage(page - 1)
+      }
     } catch (error) {
       console.error('Delete error:', error)
     }
@@ -273,9 +290,12 @@ export default function FileListWidget({
 
   const handleBulkDelete = async () => {
     try {
+      const filesToDeleteCount = selectedFiles.size
       await objectService.destroyMany(Array.from(selectedFiles))
       setSelectedFiles(new Set())
-      await refreshFiles()
+      if (filesToDeleteCount === files.length && page > 1) {
+        setPage(page - 1)
+      }
     } catch (error) {
       console.error('Bulk delete error:', error)
     }
@@ -319,6 +339,7 @@ export default function FileListWidget({
                   type="button"
                   onClick={openFilePicker}
                   disabled={uploading}
+                  aria-label="Upload Files"
                 >
                   {uploading ? "Upload in progress..." : "Upload Files"}
                 </Button>
@@ -336,6 +357,7 @@ export default function FileListWidget({
                 size="sm"
                 onClick={openFilePicker}
                 disabled={uploading}
+                aria-label="Upload Files"
               >
                 {uploading ? "Upload..." : "Upload"}
               </Button>
@@ -410,7 +432,7 @@ export default function FileListWidget({
                         <div className="flex items-center gap-2">
                           {selectedFiles.size > 0 && (
                             <DeleteButton action={handleBulkDelete} title="Delete Selected Files" description={`The following files will be deleted:\n\n${Array.from(selectedFiles).map((element) => `- ${element}`).join("\n")}.\n\nThis action cannot be undone.`}>
-                              <Button variant="destructive" size="sm">
+                              <Button variant="destructive" size="sm" aria-label="Delete Selected Files">
                                 <TrashIcon />
                                 Delete Selected
                               </Button>
