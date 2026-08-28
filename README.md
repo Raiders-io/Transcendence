@@ -1,6 +1,8 @@
 # Transcendence
 
-## <a name="introduction-en">📖 Introduction
+<a id="introduction-en"></a>
+
+## 📖 Introduction
 
 The project is subdivised in many repositories, and this one's the principal. It regroups all the services for the project.
 
@@ -11,7 +13,9 @@ The project is subdivised in many repositories, and this one's the principal. It
 * [🔧 Architecture](#arch-en)
 * [🚀 How to use](#use-en)
 
-## <a name="howtoinstall-en">⚙️ How to install
+<a id="howtoinstall-en"></a>
+
+## ⚙️ How to install
 
 ### Requirements
 
@@ -48,11 +52,15 @@ git submodule update --remote [name]
 
 Optional : `name`, update only the given remote.
 
-## <a name="arch-en">🔧 Architecture
+<a id="arch-en"></a>
+
+## 🔧 Architecture
 
 See the [ARCH.md in docs/](docs/ARCH.md).
 
-## <a name="use-en">🚀 How to use
+<a id="use-en"></a>
+
+## 🚀 How to use
 
 Currently, you need to execute to go in each submodules, and execute the following command :
 
