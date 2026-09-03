@@ -2,7 +2,7 @@ const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://auth-service:33
 
 export default async function verifyToken(token: string): Promise<number | null> {
 	try {
-		const res = await fetch(`${AUTH_SERVICE_URL}/auth/verify`, {
+		const res = await fetch(`${AUTH_SERVICE_URL}/api/v1/auth/verify`, {
 			headers: { Authorization: `Bearer ${token}` },
 		})
 		if (!res.ok)
