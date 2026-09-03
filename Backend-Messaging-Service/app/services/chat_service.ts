@@ -52,21 +52,20 @@ export default class ChatService {
 			const parsedData = typeof data === 'string' ? JSON.parse(data) : data
 			const allIds = [userId, ...parsedData.participantIds]
 			const uniqueIds = Array.from(new Set(allIds))
-			const memberIds = uniqueIds.sort((a, b) => a.localeCompare(b))
 
 			const existing = await db
 				.from('conversation_participants')
 				.select('conversation_id')
-				.whereIn('user_id', memberIds)
+				.whereIn('user_id', uniqueIds)
 				.groupBy('conversation_id')
-				.havingRaw('count(distinct user_id) = ?', [memberIds.length])
+				.havingRaw('count(distinct user_id) = ?', [uniqueIds.length])
 
 			let conversationId = existing.length > 0 ? existing[0].conversation_id : null
 
 			if (conversationId === null) {
 				const conversation = await Conversation.create({})
 				conversationId = conversation.id
-				const participants = memberIds.map((id) => ({
+				const participants = uniqueIds.map((id) => ({
 					conversation_id: conversationId,
 					user_id: id,
 					joined_at: DateTime.now().toISO(),

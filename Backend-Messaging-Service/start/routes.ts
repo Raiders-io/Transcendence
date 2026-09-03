@@ -17,5 +17,5 @@ router
 		router.get('conversations', [controllers.Conversations, 'index'])
 		router.get('conversations/:id/messages', [controllers.Conversations, 'messages'])
 	})
-	.prefix('/messaging')
+	.prefix('/api/messaging')
 	.use(middleware.verifyToken())
