@@ -66,6 +66,7 @@ router
             router.put('/:id', [controllers.AccessObjects, 'update']).as('updateObject')
             router.delete('/:id', [controllers.AccessObjects, 'destroy']).as('deleteObject')
             router.patch('/:id', [controllers.AccessObjects, 'updateInfo']).as('updateObjectInfo')
+            router.post('/search', [controllers.AccessObjects, 'search']).as('searchObjects')
           })
           .prefix('/objects')
           .as('objects')
@@ -79,6 +80,12 @@ router
             router
               .get('/:userid/objects/:id', [controllers.AccessObjects, 'showFrom'])
               .as('getObjectFrom')
+            router
+              .get('/:userid/objects/preview/:id', [controllers.AccessObjects, 'previewFrom'])
+              .as('previewObjectFrom')
+            router
+              .post('/:userid/objects/search', [controllers.AccessObjects, 'searchFrom'])
+              .as('searchObjectFrom')
           })
           .prefix('/users')
           .as('users')
