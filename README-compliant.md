@@ -33,6 +33,7 @@ Global prerequisites :
 
 ### For Development
 
+- `docker` with `compose`
 - you would need `node` at `24.16.0` and `npm` at `12.0.2`. We used `Node Version Manager` to all have the same setup.
 - for the `.env` setup, we provide a script to generate it for all services.
 
@@ -54,8 +55,8 @@ See [MEMBERS.md](MEMBERS.md) for more explanations.
 
 ## Technical Stack
 
-- Frontend : `React TS`, `ShadCN` for components, `Lucid` and `Simple Icons` for logos and icons.
-- Backend : `AdonisJS`
+- Frontend : `React TS`, `ShadCN` for components, `Lucide` and `Simple Icons` for logos and icons.
+- Backend : `AdonisJS` : 'battery included'
 - Database : `PostgreSQL` as it provides a good overall relationnal table.
 - S3 : `Garage`, open-source, light-weight, distributed by design and compatible with the `AWS S3` API
 - Message Broker and Cache : `Redis`
